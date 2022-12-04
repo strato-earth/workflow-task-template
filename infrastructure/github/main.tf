@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "github_strato_workflow_task_deployer_assume" {
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_organization}/${var.repo_name}"]
+      values   = ["repo:${var.github_organization}/${var.repo_name}:*"]
     }
   }
 }

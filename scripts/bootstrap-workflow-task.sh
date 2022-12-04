@@ -4,8 +4,8 @@ set -eo pipefail
 
 usage() {
   echo ''
-  echo 'Usage : bootstrap-workflow-task.sh -o <organiation> -n <repo-name> -t <template-folder> -w <workflow-task-type> -e <environment> -p <aws-profile>'
-  echo '-organization       | -o <organiation>         Github organization or handle, in which the repo is going to be created '
+  echo 'Usage : bootstrap-workflow-task.sh -o <organization> -n <repo-name> -t <template-folder> -w <workflow-task-type> -e <environment> -p <aws-profile>'
+  echo '-organization       | -o <organization>        Github organization or handle, in which the repo is going to be created '
   echo '-repo-name          | -n <repo-name>           The new repo name '
   echo '-template           | -t <template-folder>     The template folder'
   echo '-workflow-task-type | -w <workflow-task-type>  Workflow task type. "container" or "function"'

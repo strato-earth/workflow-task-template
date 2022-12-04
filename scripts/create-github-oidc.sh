@@ -5,9 +5,9 @@ usage ()
 {
   echo 'Creates GitHub OIDC trust.'
   echo ''
-  echo 'Usage : create-github-oidc.sh -o <organiation> -n <repo-name> -b <build-artifacts-bucket> -e <environment> -r <region> -p <profile> '
+  echo 'Usage : create-github-oidc.sh -o <organization> -n <repo-name> -b <build-artifacts-bucket> -e <environment> -r <region> -p <profile> '
   echo ''
-  echo '-organization           | -o <organiation>            Github organization or handle, in which the repo is going to be created'
+  echo '-organization           | -o <organization>           Github organization or handle, in which the repo is going to be created'
   echo '-repo-name              | -n <repo-name>              The new repo name'
   echo '-build-artifacts-bucket | -b <build-artifacts-bucket> Build Artifact Bucket'
   echo '-environment            | -e <environment>            The project name used to initialize remote state repositories'

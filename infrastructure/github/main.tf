@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "github_strato_workflow_task_deployer_assume" {
 }
 
 resource "aws_iam_role" "github_strato_workflow_task_deployer" {
-  name               = "github-build-strato-${var.github_organization}-${var.repo_name}"
+  name               = "github-build-${var.repo_name}"
   assume_role_policy = data.aws_iam_policy_document.github_strato_workflow_task_deployer_assume.json
 }
 

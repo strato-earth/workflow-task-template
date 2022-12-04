@@ -68,7 +68,7 @@ if [[ ! -d templates/$TEMPLATE_FOLDER ]]; then
   exit 1
 fi
 
-cp -r templates/$TEMPLATE_FOLDER .
+cp -ar templates/$TEMPLATE_FOLDER/. .
 
 if [[ "${WORKFLOW_TASK_TYPE}" = "container" ]]; then
   scripts/create-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}

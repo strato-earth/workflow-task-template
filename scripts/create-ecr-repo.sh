@@ -5,7 +5,7 @@ usage ()
 {
   echo 'Creates ECR Repo.'
   echo ''
-  echo 'Usage : create-ecr-repo.sh -n <repo-name> -e <environment> -r <region> -p <profile> '
+  echo 'Usage : create-ecr-repo.sh -n <repo-name> -e <environment> -p <profile> '
   echo ''
   echo '-repo-name    | -n <repo-name>    The new repo name '
   echo '-environment  | -e <environment>  The project name used to initialize remote state repositories'

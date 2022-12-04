@@ -4,7 +4,7 @@ set -eo pipefail
 
 usage() {
   echo ''
-  echo 'Usage : bootstrap-workflow-task.sh -repo <repo-name> -template <template-folder>'
+  echo 'Usage : bootstrap-workflow-task.sh -o <organiation> -n <repo-name> -t <template-folder> -w <workflow-task-type> -e <environment> -p <aws-profile>'
   echo '-organization       | -o <organiation>         Github organization or handle, in which the repo is going to be created '
   echo '-repo-name          | -n <repo-name>           The new repo name '
   echo '-template           | -t <template-folder>     The template folder'
@@ -51,7 +51,7 @@ while [[ "$1" != "" ]]; do
   shift
 done
 
-if [[ "${GITHUB_ORGANIZATION}" = "" || "${REPO_NAME}" = "" || "${TEMPLATE_FOLDER}" = "" || "${ENVIRONMENT}" = "" || "${PROFILE}" = "" ]]; then
+if [[ "${GITHUB_ORGANIZATION}" = "" || "${REPO_NAME}" = "" || "${TEMPLATE_FOLDER}" = "" || "${ENVIRONMENT}" = "" || "${PROFILE}" = "" || "${WORKFLOW_TASK_TYPE}" = "" ]]; then
   usage
 fi
 
@@ -67,7 +67,7 @@ if [[ ! -d templates/$TEMPLATE_FOLDER ]]; then
   echo "Template folder doesn't exists!"
   exit 1
 fi
-
+pwd
 cp -ar templates/$TEMPLATE_FOLDER/. .
 
 if [[ "${WORKFLOW_TASK_TYPE}" = "container" ]]; then
@@ -77,7 +77,8 @@ fi
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile ${PROFILE} | jq -r '.Account')
 ARTIFACTS_BUCKET=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/workflow_task_artifacts_bucket" --query "Parameter.Value" --output text)
 
-scripts/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $BUILD_S3_ARTIFACTS_BUCKET
+scripts/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET
+
 
 gh secret set -a actions BUILD_ARTIFACTS_AWS_ACCOUNT_ID --body $AWS_ACCOUNT_ID
 gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET

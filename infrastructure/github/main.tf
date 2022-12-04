@@ -21,13 +21,15 @@ resource "aws_iam_role" "github_strato_workflow_task_deployer" {
   assume_role_policy = data.aws_iam_policy_document.github_strato_workflow_task_deployer_assume.json
 }
 
-# FIXME: scope down the permissions to only what is required to deploy Strato
 data "aws_iam_policy_document" "github_strato_workflow_task_deployer" {
-  # statement {
-  #   effect = "Allow"
-  #   actions = ["*"]
-  #   resources = ["*"]
-  # }
+  statement {
+    sid    = "PutObjects"
+    effect = "Allow"
+    actions = [
+      "s3:PutObject"
+    ]
+    resources = ["arn:aws:s3:::${var.build_artifacts_bucket}/${var.repo_name}/*"]
+  }
 
   statement {
     sid    = "PushImage"

@@ -27,3 +27,8 @@ variable "oidc_provider_arn" {
   type        = string
   description = "GitHub OIDC Provider ARN"
 }
+
+variable "build_artifacts_bucket" {
+  type        = string
+  description = "Build Artifacts Bucket"
+}

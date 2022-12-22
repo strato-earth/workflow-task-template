@@ -57,7 +57,7 @@ fi
 
 REPO_NAME="$(tr '[:upper:]' '[:lower:]' <<< ${REPO_NAME})"
 
-gh repo create ${REPO_NAME} --private --template "strato-earth/workflow-task-template"
+gh repo create ${GITHUB_ORGANIZATION}/${REPO_NAME} --private --template "strato-earth/workflow-task-template"
 
 git clone git@github.com:${GITHUB_ORGANIZATION}/${REPO_NAME}.git
 

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+PRE_COMMIT_SCRIPT="$(dirname "$0")/../scripts/pre-commit.sh"
+
+if test -f "$PRE_COMMIT_SCRIPT"; then
+    . $PRE_COMMIT_SCRIPT
+fi

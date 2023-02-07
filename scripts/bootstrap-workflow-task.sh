@@ -57,8 +57,10 @@ fi
 
 REPO_NAME="$(tr '[:upper:]' '[:lower:]' <<< ${REPO_NAME})"
 
+echo ${GITHUB_ORGANIZATION}
+echo ${REPO_NAME}
 gh repo create ${GITHUB_ORGANIZATION}/${REPO_NAME} --private --template "strato-earth/workflow-task-template"
-
+sleep 1
 git clone git@github.com:${GITHUB_ORGANIZATION}/${REPO_NAME}.git
 
 pushd "${REPO_NAME}"
@@ -68,6 +70,7 @@ if [[ ! -d templates/$TEMPLATE_FOLDER ]]; then
   exit 1
 fi
 pwd
+
 cp -ar templates/$TEMPLATE_FOLDER/. .
 
 if [[ "${WORKFLOW_TASK_TYPE}" = "container" ]]; then
@@ -83,9 +86,8 @@ scripts/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "
 gh secret set -a actions BUILD_ARTIFACTS_AWS_ACCOUNT_ID --body $AWS_ACCOUNT_ID
 gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET
 
-# sed -r -i "s;workflow_task_template;${SU_COMPONENT};g" $(egrep "workflow_task_template" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))
-
-rm -rf templates scripts infrastructure
+rm -rf templates infrastructure scripts/bootstrap-workflow-task.sh scripts/create-ecr-repo.sh scripts/create-github-oidc.sh
+mv scripts/pre-commit .git/hooks/
 
 git add .
 git commit -m "chore: Initial Commit"

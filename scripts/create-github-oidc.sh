@@ -33,6 +33,10 @@ do
             shift
             ARTIFACTS_BUCKET=$1
             ;;
+        -workflow-task-type|-w)
+            shift
+            WORKFLOW_TASK_TYPE=$1
+            ;;            
         -environment|-e   ) 
             shift
             ENVIRONMENT=$1
@@ -49,7 +53,7 @@ do
     shift
 done
 
-if [ "$ENVIRONMENT" = "" ] || [ "$PROFILE" = "" ]
+if [ "$ENVIRONMENT" = "" ] || [ "$PROFILE" = "" ] || [ "$WORKFLOW_TASK_TYPE" = "" ]
 then
     usage
 fi
@@ -65,7 +69,7 @@ pushd $STATE_CONFIG_FOLDER
 rm -rf .terraform
 
 terraform init -input=false $BACKEND_CONFIG_ARGUMENTS
-terraform apply -input=false -auto-approve  -var="region=$REGION" -var="profile=$PROFILE" -var="environment=$ENVIRONMENT" -var="github_organization=$GITHUB_ORGANIZATION" -var="repo_name=$REPO_NAME" -var="oidc_provider_arn=$OIDC_PROVIDER_ARN" -var="build_artifacts_bucket=$ARTIFACTS_BUCKET"
+terraform apply -input=false -auto-approve  -var="region=$REGION" -var="profile=$PROFILE" -var="environment=$ENVIRONMENT" -var="github_organization=$GITHUB_ORGANIZATION" -var="task_type=$WORKFLOW_TASK_TYPE" -var="repo_name=$REPO_NAME" -var="oidc_provider_arn=$OIDC_PROVIDER_ARN" -var="build_artifacts_bucket=$ARTIFACTS_BUCKET"
 
 rm -rf .terraform
 

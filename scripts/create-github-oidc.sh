@@ -56,6 +56,7 @@ done
 if [ "$ENVIRONMENT" = "" ] || [ "$PROFILE" = "" ] || [ "$WORKFLOW_TASK_TYPE" = "" ]
 then
     usage
+    return 1
 fi
 
 STATE_CONFIG_FOLDER="$(dirname "$0")/../infrastructure/github"

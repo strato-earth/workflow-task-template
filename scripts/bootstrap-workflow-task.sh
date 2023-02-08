@@ -57,8 +57,6 @@ fi
 
 REPO_NAME="$(tr '[:upper:]' '[:lower:]' <<< ${REPO_NAME})"
 
-echo ${GITHUB_ORGANIZATION}
-echo ${REPO_NAME}
 gh repo create ${GITHUB_ORGANIZATION}/${REPO_NAME} --private --template "strato-earth/workflow-task-template"
 sleep 1
 git clone git@github.com:${GITHUB_ORGANIZATION}/${REPO_NAME}.git
@@ -81,7 +79,6 @@ AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile ${PROFILE} | jq -r '.Acco
 ARTIFACTS_BUCKET=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/workflow_task_artifacts_bucket" --query "Parameter.Value" --output text)
 
 scripts/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET
-
 
 gh secret set -a actions BUILD_ARTIFACTS_AWS_ACCOUNT_ID --body $AWS_ACCOUNT_ID
 gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET

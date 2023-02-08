@@ -84,10 +84,11 @@ gh secret set -a actions BUILD_ARTIFACTS_AWS_ACCOUNT_ID --body $AWS_ACCOUNT_ID
 gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET
 
 rm -rf templates infrastructure scripts/bootstrap-workflow-task.sh scripts/create-ecr-repo.sh scripts/create-github-oidc.sh
-mv scripts/pre-commit .git/hooks/
 
 git add .
 git commit -m "chore: Initial Commit"
 git push
+
+mv scripts/pre-commit .git/hooks/
 
 popd

@@ -55,7 +55,7 @@ if [[ "${GITHUB_ORGANIZATION}" = "" || "${REPO_NAME}" = "" || "${TEMPLATE_FOLDER
   usage
 fi
 
-REPO_NAME="$(tr '[:upper:]' '[:lower:]' <<< ${REPO_NAME})"
+REPO_NAME="$(tr '[:upper:]' '[:lower:]' <<< strato-${REPO_NAME})"
 
 gh repo create ${GITHUB_ORGANIZATION}/${REPO_NAME} --private --template "strato-earth/workflow-task-template"
 sleep 1

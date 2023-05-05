@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo
+set -eo pipefail
 
 usage() {
   echo ''
@@ -85,7 +85,9 @@ gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET
 
 rm -rf templates infrastructure scripts/bootstrap-workflow-task.sh scripts/create-ecr-repo.sh scripts/create-github-oidc.sh
 
-sed -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0)) 2>/dev/null
+set +e
+sed -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))
+set -e
 
 mv scripts/pre-commit .git/hooks/
 

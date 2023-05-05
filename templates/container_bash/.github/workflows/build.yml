@@ -55,9 +55,9 @@ jobs:
       #   run: scripts/build.sh
 
       # Create an archive with everything that is needed
-      - name: "Create the build artifact"
-        run: |
-          zip -r '${{env.REPO_NAME}}-${{github.sha}}.zip' build/${{env.REPO_NAME}}
+      # - name: "Create the build artifact"
+      #   run: |
+      #     zip -r '${{env.REPO_NAME}}-${{github.sha}}.zip' build/${{env.REPO_NAME}}
 
       # Login to AWS using pre-configured OIDC
       - name: Configure AWS Credentials
@@ -107,10 +107,10 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      # Push the build artifact to S3 named with the Commit SHA, and also a text file named with github.ref_name ("latest" for main) containing the commit SHA for reference.
-      - if: ${{ !startsWith(github.ref, 'refs/heads/dependabot/') }}
-        name: "Upload the build artifact to S3"
-        run: |
-          echo ${{github.sha}} > '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt'
-          aws s3 cp '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt' s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/container/${{env.REPO_NAME}}/
-          aws s3 cp '${{env.REPO_NAME}}-${{github.sha}}.zip' s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/container/${{env.REPO_NAME}}/
+      # # Push the build artifact to S3 named with the Commit SHA, and also a text file named with github.ref_name ("latest" for main) containing the commit SHA for reference.
+      # - if: ${{ !startsWith(github.ref, 'refs/heads/dependabot/') }}
+      #   name: "Upload the build artifact to S3"
+      #   run: |
+      #     echo ${{github.sha}} > '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt'
+      #     aws s3 cp '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt' s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/container/${{env.REPO_NAME}}/
+      #     aws s3 cp '${{env.REPO_NAME}}-${{github.sha}}.zip' s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/container/${{env.REPO_NAME}}/

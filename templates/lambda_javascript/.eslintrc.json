@@ -1,0 +1,10 @@
+{
+  "extends": ["eslint:recommended", "plugin:node/recommended", "plugin:jest/recommended"],
+  "rules": {
+    "require-atomic-updates": "off",
+    "require-await": 2,
+    "node/no-unpublished-require": "off",
+    "no-extra-boolean-cast": "off"
+  },
+  "plugins": ["jest"]
+}

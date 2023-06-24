@@ -25,9 +25,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: "Setup Repo name"
-        run: echo "REPO_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
-
+      - name: "Setup Variables"
+        run: |
+          echo "REPO_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+          echo "ENVIRONMENT=BUILD_ENVIRONMENT" >> $GITHUB_ENV
 
       # If the branch is main or master, tag this artifact as 'latest'
       - if: github.ref == 'refs/heads/main'
@@ -114,3 +115,7 @@ jobs:
       #     echo ${{github.sha}} > '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt'
       #     aws s3 cp '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt' s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/container/${{env.REPO_NAME}}/
       #     aws s3 cp '${{env.REPO_NAME}}-${{github.sha}}.zip' s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/container/${{env.REPO_NAME}}/
+
+      # Update Workflow Tasks
+      - name: "Update Workflow Tasks"
+        run: scripts/update-workflow-tasks.sh -l ${{ env.REPO_NAME }} -v ${{env.ARTIFACT_TAG}}

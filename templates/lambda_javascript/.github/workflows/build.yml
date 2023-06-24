@@ -29,6 +29,7 @@ jobs:
         run: |
           echo "REPO_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
           echo "ARTIFACT_FILE_NAME=strato-${GITHUB_REPOSITORY#*/}-${{github.sha}}.zip" >> $GITHUB_ENV
+          echo "ENVIRONMENT=BUILD_ENVIRONMENT" >> $GITHUB_ENV
 
       # If the branch is main or master, tag this artifact as 'latest'
       - if: github.ref == 'refs/heads/main'
@@ -62,10 +63,6 @@ jobs:
       - name: "Build"
         run: scripts/build.sh          
 
-      # Update Workflow Tasks
-      - name: "Update Workflow Tasks"
-        run: scripts/update-workflow-tasks.sh -l ${{ env.REPO_NAME }} -v ${{env.ARTIFACT_TAG}}
-
       # Login to AWS using pre-configured OIDC
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -73,6 +70,10 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.BUILD_ARTIFACTS_AWS_ACCOUNT_ID }}:role/github-build-${{ env.REPO_NAME }}
           role-session-name: ${{ env.REPO_NAME }}-build
           aws-region: us-west-2
+
+      # Update Workflow Tasks
+      - name: "Update Workflow Tasks"
+        run: scripts/update-workflow-tasks.sh -l ${{ env.REPO_NAME }} -v ${{env.ARTIFACT_TAG}}
 
       # Push the build artifact to S3 named with the Commit SHA, and also a text file named with github.ref_name ("latest" for main) containing the commit SHA for reference.
       - if: ${{ !startsWith(github.ref, 'refs/heads/dependabot/') }}

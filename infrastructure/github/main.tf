@@ -62,7 +62,29 @@ data "aws_iam_policy_document" "github_strato_workflow_task_deployer" {
       "ecr:GetAuthorizationToken"
     ]
     resources = ["*"]
-  }  
+  }
+
+  statement {
+    sid    = "GetWorkflowTaskUpdateFunctionName"
+    effect = "Allow"
+    actions = [
+      "ssm:GetParameter"
+    ]
+    resources = ["arn:aws:ssm:*:${local.account_id}:parameter/strato/${var.environment}/config/workflow_base/update_workflow_task_function_name"]
+  }
+
+  statement {
+    sid    = "InvokeWorkflowTaskUpdateFunction"
+    effect = "Allow"
+    actions = [
+      "lambda:InvokeFunction"
+    ]
+    resources = ["arn:aws:lambda:*:${local.account_id}:function:${data.aws_ssm_parameter.update_workflow_task_function_name.value}"]
+  }
+}
+
+data "aws_ssm_parameter" "update_workflow_task_function_name" {
+  name = "/strato/${var.environment}/config/workflow_base/update_workflow_task_function_name"
 }
 
 resource "aws_iam_policy" "github_strato_workflow_task_deployer" {

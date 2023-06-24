@@ -87,10 +87,12 @@ rm -rf templates infrastructure scripts/bootstrap-workflow-task.sh scripts/creat
 
 set +e
 sed -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))
+sed -i "s/BUILD_ENVIRONMENT/$ENVIRONMENT/g" .github/workflows/build.yml
 set -e
 
 mv scripts/pre-commit .git/hooks/
 
+scripts/install-dependencies.sh
 git add .
 git commit -m "chore: Initial Commit"
 git push

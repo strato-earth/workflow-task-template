@@ -104,4 +104,4 @@ jobs:
 
       # Update Workflow Tasks
       - name: "Update Workflow Tasks"
-        run: scripts/update-workflow-tasks.sh -l ${{ env.REPO_NAME }} -v ${{env.ARTIFACT_TAG}}
+        run: scripts/update-workflow-tasks.sh -l ${{ steps.login-ecr.outputs.registry }}/${{ env.REPO_NAME }} -v ${{env.ARTIFACT_TAG}}

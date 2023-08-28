@@ -1,10 +1,18 @@
 {
-  "extends": ["eslint:recommended", "plugin:node/recommended", "plugin:jest/recommended"],
-  "rules": {
-    "require-atomic-updates": "off",
-    "require-await": 2,
-    "node/no-unpublished-require": "off",
-    "no-extra-boolean-cast": "off"
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
   },
-  "plugins": ["jest"]
+  "env": {
+    "node": true,
+    "es6": true,
+    "jest": true
+  },
+  "extends": ["eslint:recommended"],
+  "rules": {
+    "indent": ["error", 2],
+    "linebreak-style": ["error", "unix"],
+    "semi": ["error", "always"],
+    "no-unused-vars": "warn"
+  }
 }

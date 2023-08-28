@@ -6,6 +6,7 @@ on:
     branches:
       - "STRAT-[0-9]+-*"
       - main
+      - master
 
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+*"
@@ -31,34 +32,16 @@ jobs:
           echo "ENVIRONMENT=BUILD_ENVIRONMENT" >> $GITHUB_ENV
 
       # If the branch is main or master, tag this artifact as 'latest'
-      - if: github.ref == 'refs/heads/main'
+      - if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         name: "Set the artifacts tag to latest for the main branch"
         run: |
           echo "ARTIFACT_TAG=latest" >> $GITHUB_ENV
 
       # If the branch is not main, tag this artifact with the name of the tag or branch that triggered this build
-      - if: github.ref != 'refs/heads/main'
+      - if: github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master'
         name: "Set the artifacts tag for Feature Branches and GitHub tags"
         run: |
           echo "ARTIFACT_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
-
-      - name: Install Dependencies
-        run: scripts/install-dependencies.sh
-
-      # - name: Lint
-      #   run: scripts/lint.sh
-
-      # - name: Test
-      #   run: scripts/test.sh
-
-      # Create an archive with everything that is needed
-      # - name: "Build"
-      #   run: scripts/build.sh
-
-      # Create an archive with everything that is needed
-      # - name: "Create the build artifact"
-      #   run: |
-      #     zip -r '${{env.REPO_NAME}}-${{github.sha}}.zip' build/${{env.REPO_NAME}}
 
       # Login to AWS using pre-configured OIDC
       - name: Configure AWS Credentials
@@ -108,13 +91,12 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      # # Push the build artifact to S3 named with the Commit SHA, and also a text file named with github.ref_name ("latest" for main) containing the commit SHA for reference.
-      # - if: ${{ !startsWith(github.ref, 'refs/heads/dependabot/') }}
-      #   name: "Upload the build artifact to S3"
-      #   run: |
-      #     echo ${{github.sha}} > '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt'
-      #     aws s3 cp '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt' s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/container/${{env.REPO_NAME}}/
-      #     aws s3 cp '${{env.REPO_NAME}}-${{github.sha}}.zip' s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/container/${{env.REPO_NAME}}/
+      # Push the build artifact to S3 named with the Commit SHA, and also a text file named with github.ref_name ("latest" for main or master) containing the commit SHA for reference.
+      - if: ${{ !startsWith(github.ref, 'refs/heads/dependabot/') }}
+        name: "Upload the build artifact to S3"
+        run: |
+          echo ${{github.sha}} > '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt'
+          aws s3 cp '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt' s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/container/${{env.REPO_NAME}}/
 
       # Update Workflow Tasks
       - name: "Update Workflow Tasks"

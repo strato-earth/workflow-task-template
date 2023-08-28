@@ -51,7 +51,7 @@ while [[ "$1" != "" ]]; do
   shift
 done
 
-if [[ "${GITHUB_ORGANIZATION}" = "" || "${REPO_NAME}" = "" || "${TEMPLATE_FOLDER}" = "" || "${ENVIRONMENT}" = "" || "${PROFILE}" = "" || "${WORKFLOW_TASK_TYPE}" = "" ]]; then
+if [[ "${GITHUB_ORGANIZATION}" = "" || "${REPO_NAME}" = "" || "${TEMPLATE_FOLDER}" = "" || "${ENVIRONMENT}" = "" || "${PROFILE}" = "" || ! ("${WORKFLOW_TASK_TYPE}" == "container" || "${WORKFLOW_TASK_TYPE}" == "function") ]]; then
   usage
 fi
 

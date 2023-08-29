@@ -46,6 +46,9 @@ while [[ "$1" != "" ]]; do
     ;;
   -profile|-p ) shift
     PROFILE=$1
+    ;;
+  -github-token|-g ) shift
+    GH_TOKEN=$1
     ;;    
   esac
   shift
@@ -82,6 +85,9 @@ scripts/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "
 
 gh secret set -a actions BUILD_ARTIFACTS_AWS_ACCOUNT_ID --body $AWS_ACCOUNT_ID
 gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET
+if [[ "${GH_TOKEN}" != "" ]]; then
+  gh secret set -a actions GH_TOKEN --body $GH_TOKEN
+fi
 
 rm -rf templates infrastructure scripts/bootstrap-workflow-task.sh scripts/create-ecr-repo.sh scripts/create-github-oidc.sh
 

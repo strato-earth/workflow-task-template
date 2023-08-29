@@ -37,6 +37,9 @@ while [[ "$1" != "" ]]; do
   -profile|-p ) shift
     PROFILE=$1
     ;;    
+  -github-token|-g ) shift
+    GH_TOKEN=$1
+    ;;
   esac
   shift
 done
@@ -52,6 +55,9 @@ ARTIFACTS_BUCKET=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-paramet
 
 gh secret set -a actions BUILD_ARTIFACTS_AWS_ACCOUNT_ID --body $AWS_ACCOUNT_ID
 gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET
+if [[ "${GH_TOKEN}" != "" ]]; then
+  gh secret set -a actions GH_TOKEN --body $GH_TOKEN
+fi
 
 git clone git@github.com:strato-earth/workflow-task-template.git
 

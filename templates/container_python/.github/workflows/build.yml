@@ -81,6 +81,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: Dockerfile
+          build-args: GH_TOKEN=${{ secrets.GH_TOKEN }}
           tags: ${{ steps.login-ecr.outputs.registry }}/${{env.REPO_NAME}}:${{env.ARTIFACT_TAG}},${{ steps.login-ecr.outputs.registry }}/${{env.REPO_NAME}}:${{github.sha}}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max

@@ -52,7 +52,7 @@ data "aws_iam_policy_document" "github_strato_workflow_task_deployer" {
       "ecr:CompleteLayerUpload",
       "ecr:PutImage"
     ]
-    resources = ["arn:aws:ecr:*:${local.account_id}:repository/${var.repo_name}"]
+    resources = ["arn:aws:ecr:*:${local.account_id}:repository/*"]
   }
 
   statement {

@@ -59,7 +59,7 @@ BASTION_IP=$(aws  ${AWS_PROFILE} ${AWS_REGION} ssm get-parameter --name "/strato
 
 ssh -i $KEY $USER_NAME@$BASTION_IP -fNL 2049:$EFS_ENDPOINT:2049
 sudo mkdir -p $MOUNT_FOLDER
-sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport localhost:/ $MOUNT_FOLDER
+sudo mount -t nfs -o vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport localhost:/ $MOUNT_FOLDER
 
 
 

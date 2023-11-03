@@ -12,6 +12,7 @@ usage ()
   echo '-profile     | -p <aws-profile> Name of the AWS profile'
   echo '-username    | -u Username to be used for opening the tunnel'
   echo '-key         | -k Private key to be used for opening the tunnel'
+  echo '-folder      | -f Mount folder'
   exit
 }
 
@@ -37,6 +38,9 @@ do
                         ;;
         -username|-u ) shift
                         USER_NAME=$1
+                        ;;
+        -folder|-f ) shift
+                        MOUNT_FOLDER=$1
                         ;;
     esac
     shift

@@ -41,6 +41,3 @@ fi
 AWS_REGION="--region $REGION"
 
 aws ${AWS_PROFILE}  ${AWS_REGION} ssm start-session --target $(aws ${AWS_PROFILE} ${AWS_REGION} ssm get-parameter --name /strato/${ENVIRONMENT}/config/strato/ops_instance_id --query "Parameter.Value" --output text)
-
-
-

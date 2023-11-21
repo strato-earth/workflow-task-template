@@ -13,12 +13,14 @@ usage ()
   echo '-username    | -u Username to be used for opening the tunnel'
   echo '-key         | -k Private key to be used for opening the tunnel'
   echo '-folder      | -f Mount folder'
+  echo '-v           | -f EFS Version'
   exit
 }
 
 REGION='us-west-2'
 AWS_PROFILE=''
 MOUNT_FOLDER='/mnt/efs'
+EFS_VERSION='4.1'
 
 while [ "$1" != "" ]
 do
@@ -42,6 +44,9 @@ do
         -folder|-f ) shift
                         MOUNT_FOLDER=$1
                         ;;
+        -efs-version|-v ) shift
+                        EFS_VERSION=$1
+                        ;;
     esac
     shift
 done
@@ -63,7 +68,7 @@ BASTION_IP=$(aws  ${AWS_PROFILE} ${AWS_REGION} ssm get-parameter --name "/strato
 
 ssh -i $KEY $USER_NAME@$BASTION_IP -fNL 2049:$EFS_ENDPOINT:2049
 sudo mkdir -p $MOUNT_FOLDER
-sudo mount -t nfs -o vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport localhost:/ $MOUNT_FOLDER
+sudo mount -t nfs -o vers=$EFS_VERSION,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport localhost:/ $MOUNT_FOLDER
 
 
 

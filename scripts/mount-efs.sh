@@ -66,7 +66,7 @@ AWS_REGION="--region $REGION"
 EFS_ENDPOINT=$(aws  ${AWS_PROFILE} ${AWS_REGION} ssm get-parameter --name "/strato/${ENVIRONMENT}/config/network/efs_dns_name" --query "Parameter.Value" --output text)
 BASTION_IP=$(aws  ${AWS_PROFILE} ${AWS_REGION} ssm get-parameter --name "/strato/${ENVIRONMENT}/config/network/bastion_public_ip" --query "Parameter.Value" --output text)
 
-ssh -i $KEY $USER_NAME@$BASTION_IP -fNL 2049:$EFS_ENDPOINT:2049
+ssh -i $KEY $USER_NAME@$BASTION_IP -fNL 2049:$EFS_ENDPOINT:2049 -o ServerAliveInterval=60
 sudo mkdir -p $MOUNT_FOLDER
 sudo mount -t nfs -o vers=$EFS_VERSION,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport localhost:/ $MOUNT_FOLDER
 

@@ -4,7 +4,7 @@ set -eo pipefail
 
 usage() {
   echo ''
-  echo 'Usage : remove-workflow-task.sh -o <organization> -n <repo-name> -w <workflow-task-type> -e <environment> -p <aws-profile>'
+  echo 'Usage : remove-workflow-task.sh -w <workflow-task-type> -e <environment> -p <aws-profile>'
   echo '-workflow-task-type | -w <workflow-task-type>  Workflow task type. "container" or "function"'
   echo '-environment        | -e <environment>         Strato Environment Name'
   echo '-region             | -r <aws-region>          The target AWS region. Defaults to [us-west-2]'

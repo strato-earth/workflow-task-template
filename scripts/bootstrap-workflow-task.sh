@@ -98,7 +98,10 @@ set -e
 
 mv scripts/pre-commit .git/hooks/
 
-scripts/install-dependencies.sh
+if [ -f "scripts/install-dependencies.sh" ]; then
+  scripts/install-dependencies.sh
+fi
+
 git add .
 git commit -m "chore: Initial Commit"
 git push

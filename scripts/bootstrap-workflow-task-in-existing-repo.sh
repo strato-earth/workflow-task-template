@@ -88,6 +88,10 @@ mkdir -p .github/workflows
 cp workflow-task-template/templates/$TEMPLATE_FOLDER/.github/workflows/build.yml .github/workflows/build.yml
 mkdir -p scripts
 cp workflow-task-template/scripts/update-workflow-tasks.sh scripts/update-workflow-tasks.sh
+cp workflow-task-template/scripts/delete-ecr-repo.sh scripts/delete-ecr-repo.sh
+cp workflow-task-template/scripts/delete-github-oidc.sh scripts/delete-github-oidc.sh
+cp workflow-task-template/scripts/remove-workflow-task.sh scripts/remove-workflow-task.sh
+cp -r workflow-task-template/infrastructure ./
 [ -d "workflow-task-template/templates/$TEMPLATE_FOLDER/scripts" ] && cp workflow-task-template/templates/$TEMPLATE_FOLDER/scripts/* scripts/
 
 rm -rf workflow-task-template bootstrap-workflow-task-in-existing-repo.sh

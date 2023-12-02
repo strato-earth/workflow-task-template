@@ -58,6 +58,92 @@ if [[ "${GITHUB_ORGANIZATION}" = "" || "${REPO_NAME}" = "" || "${TEMPLATE_FOLDER
   usage
 fi
 
+########################### Prerequisites ###########################
+# Function to install Terraform
+install_terraform() {
+    local os=$1
+    local terraform_version="1.5.5"
+    echo "Installing Terraform v$terraform_version..."
+
+    if [ "$os" == "Darwin" ]; then
+        local url="https://releases.hashicorp.com/terraform/$terraform_version/terraform_${terraform_version}_darwin_amd64.zip"
+    elif [ "$os" == "Linux" ]; then
+        local url="https://releases.hashicorp.com/terraform/$terraform_version/terraform_${terraform_version}_linux_amd64.zip"
+    else
+        echo "Unsupported operating system."
+        exit 1
+    fi
+
+    curl -O "$url"
+    unzip "terraform_${terraform_version}_$(echo $os | tr '[:upper:]' '[:lower:]')_amd64.zip"
+    sudo mv terraform /usr/local/bin/
+    rm "terraform_${terraform_version}_$(echo $os | tr '[:upper:]' '[:lower:]')_amd64.zip"
+    echo "Terraform v$terraform_version installed successfully."
+}
+
+install_gh() {
+    local os=$1
+    local gh_version="2.39.2" # You can update this to the desired version
+
+    echo "Installing GitHub CLI (gh) version $gh_version..."
+
+    # Download and install GitHub CLI for macOS or Linux
+    if [ "$os" == "Darwin" ]; then
+        local url="https://github.com/cli/cli/releases/download/v$gh_version/gh_${gh_version}_macOS_amd64.tar.gz"
+        curl -L $url | tar xz
+        sudo mv gh_${gh_version}_macOS_amd64/bin/gh /usr/bin/
+    elif [ "$os" == "Linux" ]; then
+        local url="https://github.com/cli/cli/releases/download/v$gh_version/gh_${gh_version}_linux_amd64.tar.gz"
+        curl -L $url | tar xz
+        sudo mv gh_${gh_version}_linux_amd64/bin/gh /usr/bin/
+    else
+        echo "Unsupported operating system."
+        exit 1
+    fi
+
+    echo "GitHub CLI installed successfully."
+}
+
+ensure_brew() {
+  if ! command -v brew &> /dev/null; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
+}
+
+# Check the operating system
+os_type=$(uname)
+
+if ! command -v gh &> /dev/null; then
+    install_gh "$os_type"
+fi
+
+# Check if Terraform is installed and the version is 1.5.5
+if command -v terraform &> /dev/null; then
+    installed_version=$(terraform -version | head -n 1 | awk '{print $2}' | cut -d'v' -f2)
+    if [ "$installed_version" != "1.5.5" ]; then
+        echo "Terraform is installed, but not v1.5.5."
+        install_terraform "$os_type"
+    fi
+else
+    echo "Terraform is not installed."
+    install_terraform "$os_type"
+fi
+
+if [[ "$os_type" == "Darwin" ]]; then
+  if ! which gsed &> /dev/null; then
+    ensure_brew
+    brew install gnu-sed
+  fi
+fi
+
+export GSED=$(which gsed 2>/dev/null || which sed)
+
+if ! ${GSED} --version 2>&1 | grep -q GNU; then
+    echo "Need GNU sed."
+    exit 1
+fi
+########################### End Prerequisites ###########################
+
 REPO_NAME="$(tr '[:upper:]' '[:lower:]' <<< strato-${REPO_NAME})"
 
 gh repo create ${GITHUB_ORGANIZATION}/${REPO_NAME} --private --template "strato-earth/workflow-task-template"
@@ -89,11 +175,11 @@ if [[ "${GH_TOKEN}" != "" ]]; then
   gh secret set -a actions GH_TOKEN --body $GH_TOKEN
 fi
 
-rm -rf templates scripts/bootstrap-workflow-task.sh scripts/create-ecr-repo.sh scripts/create-github-oidc.sh
+rm -rf templates scripts/bootstrap-workflow-task.sh scripts/bootstrap-workflow-task-in-existing-repo.sh scripts/create-ecr-repo.sh scripts/create-github-oidc.sh
 
 set +e
-sed -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))
-sed -i "s/BUILD_ENVIRONMENT/$ENVIRONMENT/g" .github/workflows/build.yml
+${GSED} -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))
+${GSED} -i "s/BUILD_ENVIRONMENT/$ENVIRONMENT/g" .github/workflows/build.yml
 set -e
 
 mv scripts/pre-commit .git/hooks/

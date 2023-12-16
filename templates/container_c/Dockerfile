@@ -12,5 +12,4 @@ COPY build/executable1 /usr/local/bin/
 # Set permissions on executables
 RUN chmod +x /usr/local/bin/executable1
 
-# Define the entry point for the image
-ENTRYPOINT ["/usr/local/bin/executable1"]
+ENTRYPOINT ["entrypoint.sh"]

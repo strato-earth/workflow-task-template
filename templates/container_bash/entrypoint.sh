@@ -9,6 +9,9 @@ _error() {
 
 trap "_error" ERR 
 
+# Set umask to ensure all newly created files have 777 permissions, so other users or services (like Lambda) can modify them 
+umask 000
+
 while [ "$1" != "" ]
 do
     case $1 in

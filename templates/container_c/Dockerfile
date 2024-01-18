@@ -12,4 +12,9 @@ COPY build/executable1 /usr/local/bin/
 # Set permissions on executables
 RUN chmod +x /usr/local/bin/executable1
 
-ENTRYPOINT ["entrypoint.sh"]
+COPY entrypoint.sh ./
+COPY scripts/pre.sh ./
+COPY scripts/post.sh ./
+COPY wrapped-entrypoint.sh ./
+
+ENTRYPOINT ["wrapped-entrypoint.sh"]

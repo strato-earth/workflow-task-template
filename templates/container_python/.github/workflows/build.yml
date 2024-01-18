@@ -60,6 +60,10 @@ jobs:
         with:
           registries: ${{ secrets.BUILD_ARTIFACTS_AWS_ACCOUNT_ID }}
 
+      - name: Get Wrapper Scripts
+        run: |
+          scripts/get-wrapper.sh -e ${{env.ENVIRONMENT}}
+
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v2

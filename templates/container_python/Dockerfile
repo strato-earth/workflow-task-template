@@ -8,4 +8,4 @@ COPY scripts/pre.sh ./
 COPY scripts/post.sh ./
 COPY wrapped-entrypoint.sh ./
 
-ENTRYPOINT ["wrapped-entrypoint.sh"]
+ENTRYPOINT ["/wrapped-entrypoint.sh"]

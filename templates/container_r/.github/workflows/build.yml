@@ -45,7 +45,7 @@ jobs:
       # Create an archive with everything that is needed
       - name: "Create the build artifact"
         run: |
-          zip -r '${{env.REPO_NAME}}-${{github.sha}}.zip' main.py
+          zip -r '${{env.REPO_NAME}}-${{github.sha}}.zip' main.R
       # Login to AWS using pre-configured OIDC
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4

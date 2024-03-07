@@ -1,8 +1,6 @@
-FROM python:3.9 
-ADD main.py .
-#Add other dependencies here
-RUN pip install boto3
+FROM rocker/r-base:latest
 
+COPY main.R ./
 COPY entrypoint.sh ./
 COPY scripts/pre.sh ./
 COPY scripts/post.sh ./

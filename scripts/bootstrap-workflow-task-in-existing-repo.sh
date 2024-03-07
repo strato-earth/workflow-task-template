@@ -92,6 +92,7 @@ cp workflow-task-template/scripts/delete-ecr-repo.sh scripts/delete-ecr-repo.sh
 cp workflow-task-template/scripts/delete-github-oidc.sh scripts/delete-github-oidc.sh
 cp workflow-task-template/scripts/remove-workflow-task.sh scripts/remove-workflow-task.sh
 cp workflow-task-template/scripts/get-wrapper.sh scripts/get-wrapper.sh
+cp workflow-task-template/templates/container_bash/wrapped-entrypoint.sh scripts/wrapped-entrypoint.sh
 cp -r workflow-task-template/infrastructure ./
 [ -d "workflow-task-template/templates/$TEMPLATE_FOLDER/scripts" ] && cp workflow-task-template/templates/$TEMPLATE_FOLDER/scripts/* scripts/
 

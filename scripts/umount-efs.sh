@@ -13,6 +13,9 @@ do
     shift
 done
 
-sudo umount $MOUNT_FOLDER
-sudo pgrep -a -f 'ssh -i' | awk '/-fNL 2049/ { print $1 }' | xargs -r kill -9
+# Uncomment the following line if you want to kill the processes using the mount /mnt/efs
+# sudo lsof /mnt/efs | awk 'NR>1 {print $2}' | xargs -r sudo kill -9
+sudo umount -i $MOUNT_FOLDER 
+sudo lsof -ti:2049 | xargs -r sudo kill -9
+
 

@@ -43,7 +43,7 @@ WORKFLOW_TASK_ARTIFACTS_BUCKET=$(aws $AWS_PROFILE $AWS_REGION ssm get-parameter 
 pushd "$(dirname "$0")"
 
 aws $AWS_PROFILE $AWS_REGION s3 cp s3://$WORKFLOW_TASK_ARTIFACTS_BUCKET/strato-workflow-tasks-wrapper/strato-workflow-tasks-wrapper.zip .
-unzip -j strato-workflow-tasks-wrapper.zip "src/bash/*" -d .
+unzip -o -j strato-workflow-tasks-wrapper.zip 'src/bash/*' -d .
 rm strato-workflow-tasks-wrapper.zip
 
 popd

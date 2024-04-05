@@ -92,7 +92,7 @@ cp workflow-task-template/scripts/delete-ecr-repo.sh scripts/delete-ecr-repo.sh
 cp workflow-task-template/scripts/delete-github-oidc.sh scripts/delete-github-oidc.sh
 cp workflow-task-template/scripts/remove-workflow-task.sh scripts/remove-workflow-task.sh
 cp workflow-task-template/scripts/get-wrapper.sh scripts/get-wrapper.sh
-cp workflow-task-template/templates/container_bash/wrapped-entrypoint.sh scripts/wrapped-entrypoint.sh
+cp workflow-task-template/templates/container_bash/wrapped-entrypoint.sh wrapped-entrypoint.sh
 echo "# placeholder for pre.sh file added by Strato Workflows CI/CD" > scripts/pre.sh
 echo "# placeholder for post.sh file added by Strato Workflows CI/CD" > scripts/post.sh
 cp -r workflow-task-template/infrastructure ./

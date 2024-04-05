@@ -4,7 +4,7 @@ set -exo pipefail
 
 usage() {
   echo ''
-  echo 'Usage : bootstrap-workflow-task.sh -o <organization> -n <repo-name> -t <template-folder> -w <workflow-task-type> -e <environment> -p <aws-profile>'
+  echo 'Usage : bootstrap-workflow-task-in-existing-repo.sh -o <organization> -n <repo-name> -t <template-folder> -w <workflow-task-type> -e <environment> -p <aws-profile>'
   echo '-template           | -t <template-folder>     The template folder'
   echo '-workflow-task-type | -w <workflow-task-type>  Workflow task type. "container" or "function"'
   echo '-environment        | -e <environment>         Strato Environment Name'

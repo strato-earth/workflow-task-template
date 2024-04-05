@@ -27,4 +27,7 @@ done
 #   _error
 # fi
 
+# Pass all parameters 
+python "./main.py" "$@"
+
 echo "Done!"

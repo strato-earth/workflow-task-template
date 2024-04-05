@@ -23,6 +23,15 @@ resource "aws_iam_role" "github_strato_workflow_task_deployer" {
 
 data "aws_iam_policy_document" "github_strato_workflow_task_deployer" {
   statement {
+    sid    = "GetWrapper"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject"
+    ]
+    resources = ["arn:aws:s3:::${var.build_artifacts_bucket}/strato-workflow-tasks-wrapper/strato-workflow-tasks-wrapper.zip"]
+  }
+
+  statement {
     sid    = "PutObjects"
     effect = "Allow"
     actions = [
@@ -65,12 +74,15 @@ data "aws_iam_policy_document" "github_strato_workflow_task_deployer" {
   }
 
   statement {
-    sid    = "GetWorkflowTaskUpdateFunctionName"
+    sid    = "GetSSMParameters"
     effect = "Allow"
     actions = [
       "ssm:GetParameter"
     ]
-    resources = ["arn:aws:ssm:*:${local.account_id}:parameter/strato/${var.environment}/config/workflow_base/update_workflow_task_function_name"]
+    resources = [
+      "arn:aws:ssm:*:${local.account_id}:parameter/strato/${var.environment}/config/workflow_base/update_workflow_task_function_name",
+      "arn:aws:ssm:*:${local.account_id}:parameter/strato/${var.environment}/config/workflow_task_artifacts_bucket"
+    ]    
   }
 
   statement {

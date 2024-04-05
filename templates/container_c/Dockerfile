@@ -12,5 +12,9 @@ COPY build/executable1 /usr/local/bin/
 # Set permissions on executables
 RUN chmod +x /usr/local/bin/executable1
 
-# Define the entry point for the image
-ENTRYPOINT ["/usr/local/bin/executable1"]
+COPY entrypoint.sh ./
+COPY scripts/pre.sh ./
+COPY scripts/post.sh ./
+COPY wrapped-entrypoint.sh ./
+
+ENTRYPOINT ["/wrapped-entrypoint.sh"]

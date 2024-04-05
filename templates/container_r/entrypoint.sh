@@ -22,9 +22,7 @@ do
     shift
 done
 
-# if [ "${ACTION}" = "" ]; then
-#   echo 'Usage : entrypoint.sh -a <action>'
-#   _error
-# fi
+# Execute the R script
+Rscript main.R "$@"
 
 echo "Done!"

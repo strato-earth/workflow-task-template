@@ -35,12 +35,6 @@ do
                         PROFILE=$1
                         AWS_PROFILE="--profile $1"
                         ;;
-        -key|-k ) shift
-                        KEY=$1
-                        ;;
-        -username|-u ) shift
-                        USER_NAME=$1
-                        ;;
         -folder|-f ) shift
                         MOUNT_FOLDER=$1
                         ;;
@@ -51,22 +45,24 @@ do
     shift
 done
 
-if [ "$KEY" = "" ]
-then
-    echo "Key hasn't been specified. Defaults to ~/keys/strato"
-    KEY='~/keys/strato'
-fi
-
-if [ "$ENVIRONMENT" = "" ] || [ "$PROFILE" = "" ] || [ "$USER_NAME" = "" ]
+if [ "$ENVIRONMENT" = "" ] || [ "$PROFILE" = "" ]
 then
     usage
 fi
 
 AWS_REGION="--region $REGION"
-EFS_ENDPOINT=$(aws  ${AWS_PROFILE} ${AWS_REGION} ssm get-parameter --name "/strato/${ENVIRONMENT}/config/network/efs_dns_name" --query "Parameter.Value" --output text)
-BASTION_IP=$(aws  ${AWS_PROFILE} ${AWS_REGION} ssm get-parameter --name "/strato/${ENVIRONMENT}/config/network/bastion_public_ip" --query "Parameter.Value" --output text)
 
-ssh -i $KEY $USER_NAME@$BASTION_IP -fNL 2049:$EFS_ENDPOINT:2049 -o ServerAliveInterval=60
+JSON_PARAMS=$(aws ${AWS_PROFILE} ${AWS_REGION} ssm get-parameters --names "/strato/$ENVIRONMENT/config/strato/ops_instance_id" "/strato/$ENVIRONMENT/config/network/efs_dns_name" --query 'Parameters[*].[Name,Value]' --output json)
+EFS_ENDPOINT=$(echo $JSON_PARAMS | jq -r ".[] | select(.[0] == \"/strato/$ENVIRONMENT/config/network/efs_dns_name\") | .[1]")
+OPS_INSTANCE_ID=$(echo $JSON_PARAMS | jq -r ".[] | select(.[0] == \"/strato/$ENVIRONMENT/config/strato/ops_instance_id\") | .[1]")
+
+cat /dev/null > nohup.out
+nohup aws ${AWS_PROFILE} ${AWS_REGION} ssm start-session --target $OPS_INSTANCE_ID --document-name "AWS-StartPortForwardingSessionToRemoteHost" --parameters "portNumber=[2049],localPortNumber=[2049],host=[$EFS_ENDPOINT]"  &
+
+while ! nc -z localhost 2049; do   
+  sleep 1 
+done
+
 sudo mkdir -p $MOUNT_FOLDER
 sudo mount -t nfs -o vers=$EFS_VERSION,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport localhost:/ $MOUNT_FOLDER
 

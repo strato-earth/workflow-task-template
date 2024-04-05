@@ -8,9 +8,12 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
 RUN unzip awscliv2.zip
 RUN ./aws/install
 
-WORKDIR /strato-arsi-prepare-output
-ENV PATH="/strato-arsi-prepare-output:${PATH}"
+WORKDIR /executable1
+ENV PATH="/executable1:${PATH}"
 
 COPY entrypoint.sh ./
+COPY scripts/pre.sh ./
+COPY scripts/post.sh ./
+COPY wrapped-entrypoint.sh ./
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["wrapped-entrypoint.sh"]

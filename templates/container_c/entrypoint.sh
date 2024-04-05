@@ -27,4 +27,7 @@ done
 #   _error
 # fi
 
+# Pass all parameters to executable1
+"/usr/local/bin/executable1" "$@"
+
 echo "Done!"

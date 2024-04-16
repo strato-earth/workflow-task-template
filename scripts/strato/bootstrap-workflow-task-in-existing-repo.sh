@@ -64,7 +64,7 @@ git clone git@github.com:strato-earth/workflow-task-template.git
 pushd workflow-task-template
 
 if [[ "${WORKFLOW_TASK_TYPE}" = "container" ]]; then
-  scripts/create-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
+  scripts/strato/create-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
   if [[ "${TEMPLATE_FOLDER}" = "" ]]; then
     TEMPLATE_FOLDER="container_bash"
   fi  
@@ -75,7 +75,7 @@ if [[ ! -d templates/$TEMPLATE_FOLDER ]]; then
   exit 1
 fi
 
-scripts/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET -w "${WORKFLOW_TASK_TYPE}"
+scripts/strato/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET -w "${WORKFLOW_TASK_TYPE}"
 
 set +e
 sed -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" templates/$TEMPLATE_FOLDER/* -r|cut -f1 -d:|sort -u)
@@ -87,6 +87,7 @@ popd
 mkdir -p .github/workflows
 cp workflow-task-template/templates/$TEMPLATE_FOLDER/.github/workflows/build.yml .github/workflows/build.yml
 mkdir -p scripts
+mkdir -p scripts/strato
 cp workflow-task-template/scripts/strato/update-workflow-tasks.sh scripts/update-workflow-tasks.sh
 cp workflow-task-template/scripts/strato/delete-ecr-repo.sh scripts/strato/delete-ecr-repo.sh
 cp workflow-task-template/scripts/strato/delete-github-oidc.sh scripts/strato/delete-github-oidc.sh

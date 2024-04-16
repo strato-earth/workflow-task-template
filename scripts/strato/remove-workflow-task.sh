@@ -74,7 +74,7 @@ aws s3 --profile "${PROFILE}" --region "$REGION" rm --recursive s3://${ARTIFACTS
 
 scripts/strato/delete-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET -w "${WORKFLOW_TASK_TYPE}"
 
-rm -rf infrastructure scripts .github/workflows/build.yml
+rm -rf infrastructure scripts/strato .github/workflows/build.yml
 
 git add .
 git commit -m "chore: Detach the repo from Strato Workflows, and leave it as a standalone Github repo."

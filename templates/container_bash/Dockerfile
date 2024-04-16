@@ -12,8 +12,6 @@ WORKDIR /executable1
 ENV PATH="/executable1:${PATH}"
 
 COPY entrypoint.sh ./
-COPY scripts/pre.sh ./
-COPY scripts/post.sh ./
-COPY wrapped-entrypoint.sh ./
+COPY scripts/ ./scripts/
 
-ENTRYPOINT ["wrapped-entrypoint.sh"]
+ENTRYPOINT ["/scripts/strato/wrapped-entrypoint.sh"]

@@ -175,14 +175,14 @@ if [[ "${GH_TOKEN}" != "" ]]; then
   gh secret set -a actions GH_TOKEN --body $GH_TOKEN
 fi
 
-rm -rf templates scripts/bootstrap-workflow-task.sh scripts/bootstrap-workflow-task-in-existing-repo.sh scripts/create-ecr-repo.sh scripts/create-github-oidc.sh
+rm -rf templates scripts/strato/bootstrap-workflow-task.sh scripts/strato/bootstrap-workflow-task-in-existing-repo.sh scripts/strato/create-ecr-repo.sh scripts/strato/create-github-oidc.sh scripts/strato/mount-efs.sh scripts/strato/umount-efs.sh scripts/strato/start-ops-session.sh
 
 set +e
 ${GSED} -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))
 ${GSED} -i "s/BUILD_ENVIRONMENT/$ENVIRONMENT/g" .github/workflows/build.yml
 set -e
 
-mv scripts/pre-commit .git/hooks/
+mv scripts/strato/pre-commit .git/hooks/
 
 if [ -f "scripts/install-dependencies.sh" ]; then
   scripts/install-dependencies.sh

@@ -4,8 +4,6 @@ ADD main.py .
 RUN pip install boto3
 
 COPY entrypoint.sh ./
-COPY scripts/pre.sh ./
-COPY scripts/post.sh ./
-COPY wrapped-entrypoint.sh ./
+COPY scripts/ ./scripts/
 
-ENTRYPOINT ["/wrapped-entrypoint.sh"]
+ENTRYPOINT ["/scripts/strato/wrapped-entrypoint.sh"]

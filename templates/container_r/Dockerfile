@@ -2,8 +2,8 @@ FROM rocker/r-base:latest
 
 COPY main.R ./
 COPY entrypoint.sh ./
-COPY scripts/pre.sh ./
-COPY scripts/post.sh ./
-COPY wrapped-entrypoint.sh ./
+COPY scripts/ ./scripts/
 
-ENTRYPOINT ["/wrapped-entrypoint.sh"]
+wrapped-entrypoint.sh
+
+ENTRYPOINT ["/scripts/strato/wrapped-entrypoint.sh"]

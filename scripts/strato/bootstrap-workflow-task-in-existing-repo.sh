@@ -88,7 +88,7 @@ mkdir -p .github/workflows
 cp workflow-task-template/templates/$TEMPLATE_FOLDER/.github/workflows/build.yml .github/workflows/build.yml
 mkdir -p scripts
 mkdir -p scripts/strato
-cp workflow-task-template/scripts/strato/update-workflow-tasks.sh scripts/update-workflow-tasks.sh
+cp workflow-task-template/scripts/strato/update-workflow-tasks.sh scripts/strato/update-workflow-tasks.sh
 cp workflow-task-template/scripts/strato/delete-ecr-repo.sh scripts/strato/delete-ecr-repo.sh
 cp workflow-task-template/scripts/strato/delete-github-oidc.sh scripts/strato/delete-github-oidc.sh
 cp workflow-task-template/scripts/strato/remove-workflow-task.sh scripts/strato/remove-workflow-task.sh

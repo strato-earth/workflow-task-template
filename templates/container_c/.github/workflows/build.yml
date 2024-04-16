@@ -76,7 +76,7 @@ jobs:
 
       - name: Get Wrapper Scripts
         run: |
-          scripts/get-wrapper.sh -e ${{env.ENVIRONMENT}}
+          scripts/strato/get-workflow-task-wrapper.sh -e ${{env.ENVIRONMENT}}
 
       - name: Set up Docker Buildx
         id: buildx
@@ -123,4 +123,4 @@ jobs:
 
       # Update Workflow Tasks
       - name: "Update Workflow Tasks"
-        run: scripts/update-workflow-tasks.sh -l ${{ steps.login-ecr.outputs.registry }}/${{ env.REPO_NAME }} -v ${{env.ARTIFACT_TAG}}
+        run: scripts/strato/update-workflow-tasks.sh -l ${{ steps.login-ecr.outputs.registry }}/${{ env.REPO_NAME }} -v ${{env.ARTIFACT_TAG}}

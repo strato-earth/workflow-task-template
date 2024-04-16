@@ -44,7 +44,7 @@ then
     usage
 fi
 
-STATE_CONFIG_FOLDER="$(dirname "$0")/../infrastructure/ecr"
+STATE_CONFIG_FOLDER="$(dirname "$0")/../../infrastructure/ecr"
 OIDC_PROVIDER_ARN=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/github/oidc_provider_arn" --query "Parameter.Value" --output text)
 BACKEND_CONFIG_ARGUMENTS=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/backend_config_arguments" --query "Parameter.Value" --output text)
 BACKEND_CONFIG_ARGUMENTS+=" -backend-config=profile=$PROFILE"

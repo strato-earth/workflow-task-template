@@ -4,7 +4,7 @@ set -eo pipefail
 
 usage() {
   echo ''
-  echo 'Usage : bootstrap-workflow-task.sh -o <organization> -n <repo-name> -t <template-folder> -w <workflow-task-type> -e <environment> -p <aws-profile>'
+  echo 'Usage : bootstrap-workflow-task-in-existing-repo.sh -o <organization> -n <repo-name> -t <template-folder> -w <workflow-task-type> -e <environment> -p <aws-profile>'
   echo '-template           | -t <template-folder>     The template folder'
   echo '-workflow-task-type | -w <workflow-task-type>  Workflow task type. "container" or "function"'
   echo '-environment        | -e <environment>         Strato Environment Name'
@@ -87,12 +87,12 @@ popd
 mkdir -p .github/workflows
 cp workflow-task-template/templates/$TEMPLATE_FOLDER/.github/workflows/build.yml .github/workflows/build.yml
 mkdir -p scripts
-cp workflow-task-template/scripts/update-workflow-tasks.sh scripts/update-workflow-tasks.sh
-cp workflow-task-template/scripts/delete-ecr-repo.sh scripts/delete-ecr-repo.sh
-cp workflow-task-template/scripts/delete-github-oidc.sh scripts/delete-github-oidc.sh
-cp workflow-task-template/scripts/remove-workflow-task.sh scripts/remove-workflow-task.sh
-cp workflow-task-template/scripts/get-wrapper.sh scripts/get-wrapper.sh
-cp workflow-task-template/templates/container_bash/wrapped-entrypoint.sh scripts/wrapped-entrypoint.sh
+cp workflow-task-template/scripts/strato/update-workflow-tasks.sh scripts/update-workflow-tasks.sh
+cp workflow-task-template/scripts/strato/delete-ecr-repo.sh scripts/strato/delete-ecr-repo.sh
+cp workflow-task-template/scripts/strato/delete-github-oidc.sh scripts/strato/delete-github-oidc.sh
+cp workflow-task-template/scripts/strato/remove-workflow-task.sh scripts/strato/remove-workflow-task.sh
+cp workflow-task-template/scripts/strato/get-workflow-task-wrapper.sh scripts/strato/get-workflow-task-wrapper.sh
+cp workflow-task-template/scripts/strato/wrapped-entrypoint.sh scripts/strato/wrapped-entrypoint.sh
 cp -r workflow-task-template/infrastructure ./
 [ -d "workflow-task-template/templates/$TEMPLATE_FOLDER/scripts" ] && cp workflow-task-template/templates/$TEMPLATE_FOLDER/scripts/* scripts/
 

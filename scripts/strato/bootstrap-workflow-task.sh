@@ -175,6 +175,8 @@ if [[ "${GH_TOKEN}" != "" ]]; then
   gh secret set -a actions GH_TOKEN --body $GH_TOKEN
 fi
 
+mv scripts/strato/pre-commit .git/hooks/
+
 rm -rf templates infrastructure
 find scripts/strato -type f ! \( -name 'update-workflow-tasks.sh' -o -name 'get-workflow-task-wrapper.sh' -o -name 'wrapped-entrypoint.sh' \) -exec rm {} +
 
@@ -182,8 +184,6 @@ set +e
 ${GSED} -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))
 ${GSED} -i "s/BUILD_ENVIRONMENT/$ENVIRONMENT/g" .github/workflows/build.yml
 set -e
-
-mv scripts/strato/pre-commit .git/hooks/
 
 if [ -f "scripts/install-dependencies.sh" ]; then
   scripts/install-dependencies.sh

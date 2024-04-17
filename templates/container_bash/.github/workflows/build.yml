@@ -45,7 +45,7 @@ jobs:
 
       # Login to AWS using pre-configured OIDC
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.BUILD_ARTIFACTS_AWS_ACCOUNT_ID }}:role/github-build-${{ env.REPO_NAME }}
           role-session-name: ${{env.REPO_NAME}}-build

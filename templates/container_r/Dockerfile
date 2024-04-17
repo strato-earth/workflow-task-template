@@ -6,4 +6,4 @@ COPY scripts/ ./scripts/
 
 wrapped-entrypoint.sh
 
-ENTRYPOINT ["/scripts/strato/wrapped-entrypoint.sh"]
+ENTRYPOINT ["scripts/strato/wrapped-entrypoint.sh"]

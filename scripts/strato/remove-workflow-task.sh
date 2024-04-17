@@ -59,7 +59,9 @@ if [[ "${WORKFLOW_TASK_TYPE}" = "container" ]]; then
     for digest in $image_digests; do
       aws --profile "${PROFILE}" --region "$REGION" ecr batch-delete-image --repository-name ${REPO_NAME} --image-ids imageDigest=$digest
     done
-
+    
+    sleep 3
+        
     workflow-task-template/scripts/strato/delete-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
   else
       echo "ECR Repository '$REPO_NAME' does not exist. Skipping deletion step."

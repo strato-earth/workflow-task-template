@@ -59,26 +59,21 @@ if [[ "${GITHUB_ORGANIZATION}" = "" || "${REPO_NAME}" = "" || "${TEMPLATE_FOLDER
 fi
 
 ########################### Prerequisites ###########################
-# Function to install Terraform
-install_terraform() {
-    local os=$1
-    local terraform_version="1.5.5"
-    echo "Installing Terraform v$terraform_version..."
+# Function to install OpenTofu
+install_opentofu() {
+    # Download the installer script:
+    curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh -o install-opentofu.sh
 
-    if [ "$os" == "Darwin" ]; then
-        local url="https://releases.hashicorp.com/terraform/$terraform_version/terraform_${terraform_version}_darwin_amd64.zip"
-    elif [ "$os" == "Linux" ]; then
-        local url="https://releases.hashicorp.com/terraform/$terraform_version/terraform_${terraform_version}_linux_amd64.zip"
-    else
-        echo "Unsupported operating system."
-        exit 1
-    fi
+    # Grant execution permissions:
+    chmod +x install-opentofu.sh
 
-    curl -O "$url"
-    unzip "terraform_${terraform_version}_$(echo $os | tr '[:upper:]' '[:lower:]')_amd64.zip"
-    sudo mv terraform /usr/local/bin/
-    rm "terraform_${terraform_version}_$(echo $os | tr '[:upper:]' '[:lower:]')_amd64.zip"
-    echo "Terraform v$terraform_version installed successfully."
+    # Please inspect the downloaded script at this point.
+
+    # Run the installer:
+    ./install-opentofu.sh --install-method standalone
+
+    # Remove the installer:
+    rm install-opentofu.sh
 }
 
 install_gh() {
@@ -117,16 +112,10 @@ if ! command -v gh &> /dev/null; then
     install_gh "$os_type"
 fi
 
-# Check if Terraform is installed and the version is 1.5.5
-if command -v terraform &> /dev/null; then
-    installed_version=$(terraform -version | head -n 1 | awk '{print $2}' | cut -d'v' -f2)
-    if [ "$installed_version" != "1.5.5" ]; then
-        echo "Terraform is installed, but not v1.5.5."
-        install_terraform "$os_type"
-    fi
-else
-    echo "Terraform is not installed."
-    install_terraform "$os_type"
+# Check if OpenTofu is installed
+if ! command -v tofu &> /dev/null; then
+    echo "OpenTofu is not installed."
+    install_opentofu
 fi
 
 if [[ "$os_type" == "Darwin" ]]; then

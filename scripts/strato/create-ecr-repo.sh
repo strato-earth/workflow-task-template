@@ -54,8 +54,8 @@ pushd $STATE_CONFIG_FOLDER
 
 rm -rf .terraform
 
-terraform init -input=false $BACKEND_CONFIG_ARGUMENTS
-terraform apply -input=false -auto-approve  -var="region=$REGION" -var="profile=$PROFILE" -var="environment=$ENVIRONMENT" -var="repo_name=$REPO_NAME"
+tofu init -input=false $BACKEND_CONFIG_ARGUMENTS
+tofu apply -input=false -auto-approve  -var="region=$REGION" -var="profile=$PROFILE" -var="environment=$ENVIRONMENT" -var="repo_name=$REPO_NAME"
 
 rm -rf .terraform
 

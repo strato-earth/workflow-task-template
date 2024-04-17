@@ -40,14 +40,14 @@ if [[ "${ENVIRONMENT}" = "" || "${PROFILE}" = "" || ! ("${WORKFLOW_TASK_TYPE}" =
   usage
 fi
 
-pushd "$(dirname "$0")/../.." > /dev/null
 
 # Get the repository and organization name using GitHub CLI
 REPO_INFO=$(gh repo view --json owner,name)
-
 # Extract the repository name and organization name using jq
 REPO_NAME=$(echo "$REPO_INFO" | jq -r '.name')
 GITHUB_ORGANIZATION=$(echo "$REPO_INFO" | jq -r '.owner.login')
+
+git clone git@github.com:strato-earth/workflow-task-template.git
 
 if [[ "${WORKFLOW_TASK_TYPE}" = "container" ]]; then
   # Check if the ECR repository exists
@@ -60,19 +60,17 @@ if [[ "${WORKFLOW_TASK_TYPE}" = "container" ]]; then
       aws --profile "${PROFILE}" --region "$REGION" ecr batch-delete-image --repository-name ${REPO_NAME} --image-ids imageDigest=$digest
     done
 
-    scripts/strato/delete-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
+    workflow-task-template/scripts/strato/delete-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
   else
       echo "ECR Repository '$REPO_NAME' does not exist. Skipping deletion step."
   fi    
 fi
 
-
-
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile ${PROFILE} | jq -r '.Account')
 ARTIFACTS_BUCKET=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/workflow_task_artifacts_bucket" --query "Parameter.Value" --output text)
 aws s3 --profile "${PROFILE}" --region "$REGION" rm --recursive s3://${ARTIFACTS_BUCKET}/container/${REPO_NAME}
 
-scripts/strato/delete-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET -w "${WORKFLOW_TASK_TYPE}"
+workflow-task-template/scripts/strato/delete-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET -w "${WORKFLOW_TASK_TYPE}"
 
 rm -rf infrastructure scripts/strato .github/workflows/build.yml
 
@@ -80,4 +78,3 @@ git add .
 git commit -m "chore: Detach the repo from Strato Workflows, and leave it as a standalone Github repo."
 git push
 
-popd > /dev/null

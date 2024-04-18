@@ -76,6 +76,7 @@ jobs:
 
       - name: Get Wrapper Scripts
         run: |
+          mkdir -p scripts/strato
           aws s3 cp s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/strato-workflow-tasks-wrapper/strato-workflow-tasks-wrapper.zip .
           unzip -o -j strato-workflow-tasks-wrapper.zip "src/bash/*" -d scripts/strato/
 

@@ -46,6 +46,7 @@ jobs:
       - name: "Create the build artifact"
         run: |
           zip -r '${{env.REPO_NAME}}-${{github.sha}}.zip' main.py
+
       # Login to AWS using pre-configured OIDC
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -62,7 +63,8 @@ jobs:
 
       - name: Get Wrapper Scripts
         run: |
-          scripts/strato/get-workflow-task-wrapper.sh -e ${{env.ENVIRONMENT}}
+          aws s3 cp s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/strato-workflow-tasks-wrapper/strato-workflow-tasks-wrapper.zip .
+          unzip -o -j strato-workflow-tasks-wrapper.zip "src/bash/*" -d scripts/strato/
 
       - name: Set up Docker Buildx
         id: buildx

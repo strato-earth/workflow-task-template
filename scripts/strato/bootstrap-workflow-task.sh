@@ -167,7 +167,7 @@ fi
 mv scripts/strato/pre-commit .git/hooks/
 
 rm -rf templates infrastructure
-find scripts/strato -type f ! \( -name 'update-workflow-tasks.sh' -o -name 'get-workflow-task-wrapper.sh' -o -name 'wrapped-entrypoint.sh' \) -exec rm {} +
+find scripts/strato -type f ! \( -name 'get-workflow-task-wrapper.sh' -o -name 'wrapped-entrypoint.sh' \) -exec rm {} +
 
 set +e
 ${GSED} -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))

@@ -47,6 +47,7 @@ REPO_INFO=$(gh repo view --json owner,name)
 REPO_NAME=$(echo "$REPO_INFO" | jq -r '.name')
 GITHUB_ORGANIZATION=$(echo "$REPO_INFO" | jq -r '.owner.login')
 
+rm -rf workflow-task-template
 git clone git@github.com:strato-earth/workflow-task-template.git
 
 if [[ "${WORKFLOW_TASK_TYPE}" = "container" ]]; then

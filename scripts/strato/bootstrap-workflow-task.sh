@@ -158,6 +158,7 @@ if [[ "${GH_TOKEN}" != "" ]]; then
 fi
 
 mv scripts/strato/pre-commit .git/hooks/
+mkdir -p .github/workflows
 mv github/build.yml .github/workflows/build.yml
 rm -rf templates infrastructure github
 find scripts/strato -type f ! \( -name 'entrypoint.sh' \) -exec rm {} +

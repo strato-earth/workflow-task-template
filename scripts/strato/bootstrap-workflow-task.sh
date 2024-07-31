@@ -158,9 +158,9 @@ if [[ "${GH_TOKEN}" != "" ]]; then
 fi
 
 mv scripts/strato/pre-commit .git/hooks/
-
-rm -rf templates infrastructure
-find scripts/strato -type f ! \( -name 'bootstrap-workflow-task.sh' -o -name 'wrapped-entrypoint.sh' \) -exec rm {} +
+mv github/build.yml .github/workflows/build.yml
+rm -rf templates infrastructure github
+find scripts/strato -type f ! \( -name 'entrypoint.sh' \) -exec rm {} +
 
 set +e
 ${GSED} -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))

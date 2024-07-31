@@ -1,11 +1,11 @@
 #!/bin/bash
 set -eo pipefail
 
-# Check if scripts/strato/pre.sh exists before sourcing
-if [ -f "scripts/strato/pre.sh" ]; then
-    source scripts/strato/pre.sh
+# Check if ./pre.sh exists before sourcing
+if [ -f "./pre.sh" ]; then
+    source ./pre.sh
 else
-    echo "scripts/strato/pre.sh does not exist, skipping..."
+    echo "pre.sh does not exist, skipping..."
 fi
 
 # Source the handler script
@@ -36,9 +36,9 @@ else
   handler "$@"
 fi
 
-# Check if scripts/strato/post.sh exists before sourcing
-if [ -f "scripts/strato/post.sh" ]; then
-    source scripts/strato/post.sh
+# Check if ./post.sh exists before sourcing
+if [ -f "./post.sh" ]; then
+    source ./post.sh
 else
-    echo "scripts/strato/post.sh does not exist, skipping..."
+    echo "post.sh does not exist, skipping..."
 fi

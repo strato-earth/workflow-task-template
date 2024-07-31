@@ -17,10 +17,6 @@ REGION='us-west-2'
 
 while [[ "$1" != "" ]]; do
   case $1 in
-  -workflow-task-type|-w)
-    shift
-    WORKFLOW_TASK_TYPE=$1
-    ;;
   -environment|-e )
     shift
     ENVIRONMENT=$1
@@ -36,7 +32,7 @@ while [[ "$1" != "" ]]; do
   shift
 done
 
-if [[ "${ENVIRONMENT}" = "" || "${PROFILE}" = "" || ! ("${WORKFLOW_TASK_TYPE}" == "container" || "${WORKFLOW_TASK_TYPE}" == "function") ]]; then
+if [[ "${ENVIRONMENT}" = "" || "${PROFILE}" = "" ]]; then
   usage
 fi
 
@@ -73,7 +69,7 @@ AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile ${PROFILE} | jq -r '.Acco
 ARTIFACTS_BUCKET=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/workflow_task_artifacts_bucket" --query "Parameter.Value" --output text)
 aws s3 --profile "${PROFILE}" --region "$REGION" rm --recursive s3://${ARTIFACTS_BUCKET}/container/${REPO_NAME}
 
-workflow-task-template/scripts/strato/delete-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET -w "${WORKFLOW_TASK_TYPE}"
+workflow-task-template/scripts/strato/delete-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET"
 
 rm -rf infrastructure scripts/strato .github/workflows/build.yml workflow-task-template remove-workflow-task.sh
 

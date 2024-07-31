@@ -32,8 +32,3 @@ variable "build_artifacts_bucket" {
   type        = string
   description = "Build Artifacts Bucket"
 }
-
-variable "task_type" {
-  type        = string
-  description = "The Workflow task type"
-}

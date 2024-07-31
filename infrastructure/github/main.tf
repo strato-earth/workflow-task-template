@@ -37,7 +37,7 @@ data "aws_iam_policy_document" "github_strato_workflow_task_deployer" {
     actions = [
       "s3:PutObject"
     ]
-    resources = ["arn:aws:s3:::${var.build_artifacts_bucket}/${var.task_type}/${var.repo_name}/*"]
+    resources = ["arn:aws:s3:::${var.build_artifacts_bucket}/${var.repo_name}/*"]
   }
 
   statement {

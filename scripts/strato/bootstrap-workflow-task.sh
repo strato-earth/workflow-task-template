@@ -128,13 +128,13 @@ if ! ${GSED} --version 2>&1 | grep -q GNU; then
 fi
 ########################### End Prerequisites ###########################
 
-# REPO_NAME="$(tr '[:upper:]' '[:lower:]' <<< strato-${REPO_NAME})"
+REPO_NAME="$(tr '[:upper:]' '[:lower:]' <<< strato-${REPO_NAME})"
 
-# gh repo create ${GITHUB_ORGANIZATION}/${REPO_NAME} --private --template "strato-earth/workflow-task-template"
-# sleep 3
-# git clone git@github.com:${GITHUB_ORGANIZATION}/${REPO_NAME}.git
+gh repo create ${GITHUB_ORGANIZATION}/${REPO_NAME} --private --template "strato-earth/workflow-task-template"
+sleep 3
+git clone git@github.com:${GITHUB_ORGANIZATION}/${REPO_NAME}.git
 
-# pushd "${REPO_NAME}"
+pushd "${REPO_NAME}"
 
 if [[ ! -d templates/$TEMPLATE_FOLDER ]]; then
   echo "Template folder doesn't exists!"
@@ -144,18 +144,18 @@ pwd
 
 cp -a templates/$TEMPLATE_FOLDER/. .
 
-# scripts/strato/create-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
+scripts/strato/create-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
 
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile ${PROFILE} | jq -r '.Account')
 ARTIFACTS_BUCKET=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/workflow_task_artifacts_bucket" --query "Parameter.Value" --output text)
 
-# scripts/strato/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET"
+scripts/strato/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET"
 
-# gh secret set -a actions BUILD_ARTIFACTS_AWS_ACCOUNT_ID --body $AWS_ACCOUNT_ID
-# gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET
-# if [[ "${GH_TOKEN}" != "" ]]; then
-#   gh secret set -a actions GH_TOKEN --body $GH_TOKEN
-# fi
+gh secret set -a actions BUILD_ARTIFACTS_AWS_ACCOUNT_ID --body $AWS_ACCOUNT_ID
+gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET
+if [[ "${GH_TOKEN}" != "" ]]; then
+  gh secret set -a actions GH_TOKEN --body $GH_TOKEN
+fi
 
 mv scripts/strato/pre-commit .git/hooks/
 

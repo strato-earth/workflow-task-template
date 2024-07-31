@@ -167,8 +167,8 @@ ${GSED} -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir
 ${GSED} -i "s/BUILD_ENVIRONMENT/$ENVIRONMENT/g" .github/workflows/build.yml
 set -e
 
-# git add .
-# git commit -m "chore: Initial Commit"
-# git push
+git add .
+git commit -m "chore: Initial Commit"
+git push
 
 popd

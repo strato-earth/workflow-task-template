@@ -1,1 +1,3 @@
-nohup.out
+build/
+scripts/strato/post.sh
+scripts/strato/pre.sh

@@ -8,7 +8,6 @@ usage() {
   echo '-organization       | -o <organization>        Github organization or handle, in which the repo is going to be created '
   echo '-repo-name          | -n <repo-name>           The new repo name '
   echo '-template           | -t <template-folder>     The template folder'
-  echo '-workflow-task-type | -w <workflow-task-type>  Workflow task type. "container" or "function"'
   echo '-environment        | -e <environment>         Strato Environment Name'
   echo '-region             | -r <aws-region>          The target AWS region. Defaults to [us-west-2]'
   echo '-profile            | -p <aws-profile>         Name of the AWS profile'
@@ -32,10 +31,6 @@ while [[ "$1" != "" ]]; do
     shift
     TEMPLATE_FOLDER=$1
     ;;
-  -workflow-task-type|-w)
-    shift
-    WORKFLOW_TASK_TYPE=$1
-    ;;
   -environment|-e )
     shift
     ENVIRONMENT=$1
@@ -54,7 +49,7 @@ while [[ "$1" != "" ]]; do
   shift
 done
 
-if [[ "${GITHUB_ORGANIZATION}" = "" || "${REPO_NAME}" = "" || "${TEMPLATE_FOLDER}" = "" || "${ENVIRONMENT}" = "" || "${PROFILE}" = "" || ! ("${WORKFLOW_TASK_TYPE}" == "container" || "${WORKFLOW_TASK_TYPE}" == "function") ]]; then
+if [[ "${GITHUB_ORGANIZATION}" = "" || "${REPO_NAME}" = "" || "${TEMPLATE_FOLDER}" = "" || "${ENVIRONMENT}" = "" || "${PROFILE}" = "" ]]; then
   usage
 fi
 
@@ -133,13 +128,13 @@ if ! ${GSED} --version 2>&1 | grep -q GNU; then
 fi
 ########################### End Prerequisites ###########################
 
-REPO_NAME="$(tr '[:upper:]' '[:lower:]' <<< strato-${REPO_NAME})"
+# REPO_NAME="$(tr '[:upper:]' '[:lower:]' <<< strato-${REPO_NAME})"
 
-gh repo create ${GITHUB_ORGANIZATION}/${REPO_NAME} --private --template "strato-earth/workflow-task-template"
-sleep 3
-git clone git@github.com:${GITHUB_ORGANIZATION}/${REPO_NAME}.git
+# gh repo create ${GITHUB_ORGANIZATION}/${REPO_NAME} --private --template "strato-earth/workflow-task-template"
+# sleep 3
+# git clone git@github.com:${GITHUB_ORGANIZATION}/${REPO_NAME}.git
 
-pushd "${REPO_NAME}"
+# pushd "${REPO_NAME}"
 
 if [[ ! -d templates/$TEMPLATE_FOLDER ]]; then
   echo "Template folder doesn't exists!"
@@ -149,37 +144,31 @@ pwd
 
 cp -a templates/$TEMPLATE_FOLDER/. .
 
-if [[ "${WORKFLOW_TASK_TYPE}" = "container" ]]; then
-  scripts/strato/create-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
-fi
+# scripts/strato/create-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
 
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile ${PROFILE} | jq -r '.Account')
 ARTIFACTS_BUCKET=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/workflow_task_artifacts_bucket" --query "Parameter.Value" --output text)
 
-scripts/strato/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET -w "${WORKFLOW_TASK_TYPE}"
+# scripts/strato/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b $ARTIFACTS_BUCKET"
 
-gh secret set -a actions BUILD_ARTIFACTS_AWS_ACCOUNT_ID --body $AWS_ACCOUNT_ID
-gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET
-if [[ "${GH_TOKEN}" != "" ]]; then
-  gh secret set -a actions GH_TOKEN --body $GH_TOKEN
-fi
+# gh secret set -a actions BUILD_ARTIFACTS_AWS_ACCOUNT_ID --body $AWS_ACCOUNT_ID
+# gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET
+# if [[ "${GH_TOKEN}" != "" ]]; then
+#   gh secret set -a actions GH_TOKEN --body $GH_TOKEN
+# fi
 
 mv scripts/strato/pre-commit .git/hooks/
 
 rm -rf templates infrastructure
-find scripts/strato -type f ! \( -name 'get-workflow-task-wrapper.sh' -o -name 'wrapped-entrypoint.sh' \) -exec rm {} +
+find scripts/strato -type f ! \( -name 'bootstrap-workflow-task.sh' -o -name 'wrapped-entrypoint.sh' \) -exec rm {} +
 
 set +e
 ${GSED} -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))
 ${GSED} -i "s/BUILD_ENVIRONMENT/$ENVIRONMENT/g" .github/workflows/build.yml
 set -e
 
-if [ -f "scripts/install-dependencies.sh" ]; then
-  scripts/install-dependencies.sh
-fi
-
-git add .
-git commit -m "chore: Initial Commit"
-git push
+# git add .
+# git commit -m "chore: Initial Commit"
+# git push
 
 popd

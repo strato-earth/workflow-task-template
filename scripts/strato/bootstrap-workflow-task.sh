@@ -4,10 +4,11 @@ set -eo pipefail
 
 usage() {
   echo ''
-  echo 'Usage : bootstrap-workflow-task.sh -o <organization> -n <repo-name> -t <template-folder> -w <workflow-task-type> -e <environment> -p <aws-profile>'
+  echo 'Usage : bootstrap-workflow-task.sh -o <organization> -n <repo-name> -t <template-folder> -v <runtime-version> -w <workflow-task-type> -e <environment> -p <aws-profile>'
   echo '-organization       | -o <organization>        Github organization or handle, in which the repo is going to be created '
   echo '-repo-name          | -n <repo-name>           The new repo name '
   echo '-template           | -t <template-folder>     The template folder'
+  echo '-version            | -v <runtime-version>     Runtime version'
   echo '-environment        | -e <environment>         Strato Environment Name'
   echo '-region             | -r <aws-region>          The target AWS region. Defaults to [us-west-2]'
   echo '-profile            | -p <aws-profile>         Name of the AWS profile'
@@ -31,6 +32,10 @@ while [[ "$1" != "" ]]; do
     shift
     TEMPLATE_FOLDER=$1
     ;;
+  -version|-v)
+    shift
+    RUNTIME_VERSION=".$1"
+    ;;    
   -environment|-e )
     shift
     ENVIRONMENT=$1
@@ -157,11 +162,12 @@ if [[ "${GH_TOKEN}" != "" ]]; then
   gh secret set -a actions GH_TOKEN --body $GH_TOKEN
 fi
 
+mv "docker/Dockerfile${RUNTIME_VERSION}" Dockerfile
 mv scripts/strato/pre-commit .git/hooks/
 mkdir -p .github/workflows
 mv github/build.yml .github/workflows/build.yml
-rm -rf templates infrastructure github
-find scripts/strato -type f ! \( -name 'entrypoint.sh' \) -exec rm {} +
+rm -rf templates infrastructure github scripts docker
+
 
 set +e
 ${GSED} -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))

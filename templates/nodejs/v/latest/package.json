@@ -1,0 +1,30 @@
+{
+  "name": "executable1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "jest test/ --coverage",
+    "test:integration": "jest test_integration/ --coverage",
+    "lint": "eslint .",
+    "lint-init": "eslint --init",
+    "format": "prettier --write \"{src,test,test-integration}/**/*.js\"",
+    "build": "node esbuild.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "esbuild": "0.20.2",
+    "eslint": "8.40.0",
+    "eslint-plugin-jest": "28.2.0",
+    "eslint-plugin-node": "11.1.0",
+    "jest": "29.7.0",
+    "prettier": "3.2.5"
+  }
+}

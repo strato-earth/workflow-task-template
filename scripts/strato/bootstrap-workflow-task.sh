@@ -17,6 +17,7 @@ usage() {
 }
 
 REGION='us-west-2'
+RUNTIME_VERSION='latest'
 
 while [[ "$1" != "" ]]; do
   case $1 in
@@ -34,7 +35,7 @@ while [[ "$1" != "" ]]; do
     ;;
   -version|-v)
     shift
-    RUNTIME_VERSION=".$1"
+    RUNTIME_VERSION=$1
     ;;    
   -environment|-e )
     shift
@@ -141,13 +142,13 @@ git clone git@github.com:${GITHUB_ORGANIZATION}/${REPO_NAME}.git
 
 pushd "${REPO_NAME}"
 
-if [[ ! -d templates/$TEMPLATE_FOLDER ]]; then
-  echo "Template folder doesn't exists!"
+if [[ ! -d templates/$TEMPLATE_FOLDER/v/$RUNTIME_VERSION ]]; then
+  echo "Template folder $TEMPLATE_FOLDER, for version $RUNTIME_VERSION doesn't exists!"
   exit 1
 fi
 pwd
 
-cp -a templates/$TEMPLATE_FOLDER/. .
+cp -a templates/$TEMPLATE_FOLDER/v/$RUNTIME_VERSION/. .
 
 scripts/strato/create-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
 
@@ -162,12 +163,10 @@ if [[ "${GH_TOKEN}" != "" ]]; then
   gh secret set -a actions GH_TOKEN --body $GH_TOKEN
 fi
 
-mv "docker/Dockerfile${RUNTIME_VERSION}" Dockerfile
 mv scripts/strato/pre-commit .git/hooks/
 mkdir -p .github/workflows
 mv github/build.yml .github/workflows/build.yml
 rm -rf templates infrastructure github scripts docker
-
 
 set +e
 ${GSED} -r -i "s;executable1;${REPO_NAME};g" $(egrep "executable1" --exclude-dir=node_modules * -r|cut -f1 -d:|sort -u|egrep -v $(basename $0))

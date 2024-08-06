@@ -104,7 +104,7 @@ jobs:
         name: "Upload the build artifact to S3"
         run: |
           echo ${{github.sha}} > '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt'
-          aws s3 cp '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt' s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/container/${{env.REPO_NAME}}/
+          aws s3 cp '${{env.REPO_NAME}}-${{env.ARTIFACT_TAG}}.txt' s3://${{ secrets.BUILD_S3_ARTIFACTS_BUCKET }}/${{env.REPO_NAME}}/
 
       # Update Workflow Tasks
       - name: "Update Workflow Tasks"

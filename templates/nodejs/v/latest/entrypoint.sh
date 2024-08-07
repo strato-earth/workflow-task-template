@@ -8,32 +8,21 @@ else
     echo "pre.sh does not exist, skipping..."
 fi
 
-# Source the handler script
-source /var/task/strato_task.sh
-
 # Check the runtime environment
 if [ "$RUNTIME_ENV" = "lambda" ]; then
-  # Lambda environment
-  while true; do
-    HEADERS=$(mktemp)
-    # Get an event. The HTTP request will block until one is received
-    EVENT_DATA=$(curl -sS -LD "${HEADERS}" "http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/next")
+  export _HANDLER="strato_task.handler"  # Adjusted to specify the handler function
 
-    # Extract request ID by scraping response headers received above
-    REQUEST_ID=$(grep -Fi Lambda-Runtime-Aws-Request-Id "${HEADERS}" | tr -d '[:space:]' | cut -d: -f2)
-
-    # Run the handler function
-    RESPONSE=$(handler "${EVENT_DATA}")
-
-    # Send the response
-    curl -sS "http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/${REQUEST_ID}/response" -d "${RESPONSE}"
-
-    # Clean up the temporary headers file
-    rm -f "${HEADERS}"
-  done
+  RUNTIME_ENTRYPOINT=/var/runtime/bootstrap
+  if [ -z "${AWS_LAMBDA_RUNTIME_API}" ]; then
+    echo "Starting Lambda RIE..."
+    exec /usr/local/bin/aws-lambda-rie $RUNTIME_ENTRYPOINT
+  else
+    echo "Running in AWS Lambda environment..."
+    exec $RUNTIME_ENTRYPOINT
+  fi
 else
   echo "Running in ECS environment..."
-  handler "$@"
+  node -e "import('./strato_task.mjs').then(({ handler }) => { (async () => { await handler(); })(); }).catch(err => console.error(err));"
 fi
 
 # Check if ./post.sh exists before sourcing

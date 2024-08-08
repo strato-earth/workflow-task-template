@@ -4,8 +4,8 @@ import os
 import subprocess
 import json
 import sys
-
 from task import task_handler
+
 
 def run_script(script_path):
     """Run a shell script if it exists."""
@@ -14,6 +14,7 @@ def run_script(script_path):
         subprocess.run(["bash", script_path], check=True)
     else:
         print(f'{script_path} not found, skipping.')
+
 
 def handler(event=None, context=None):
     """Main task handler that executes pre and post scripts."""
@@ -36,6 +37,7 @@ def handler(event=None, context=None):
         print('Error occurred:', error)
         raise
 
+
 def parse_args(args):
     """Parse command-line arguments as JSON."""
     if len(args) > 1:
@@ -47,6 +49,7 @@ def parse_args(args):
     else:
         event = {}
     return event
+
 
 if __name__ == '__main__':
     event = parse_args(sys.argv)

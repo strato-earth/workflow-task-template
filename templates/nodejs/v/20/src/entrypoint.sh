@@ -7,6 +7,17 @@ if [ "$RUNTIME_ENV" = "lambda" ]; then
   /lambda-entrypoint.sh "strato_task.handler"
 else
   echo "Running in ECS environment..."
-  /var/lang/bin/node -e "import('./strato_task.mjs').then(({ handler }) => { (async () => { await handler(process.argv[1]}))(); }).catch(err => console.error(err));" "$1"
-fi
 
+  /var/lang/bin/node -e "
+    import('./strato_task.mjs').then(({ handler }) => {
+      (async () => {
+        try {
+          const event = JSON.parse('$1');
+          await handler(event);
+        } catch (error) {
+          console.error('Error in handler:', error);
+        }
+      })();
+    }).catch(err => console.error('Error importing module:', err));
+  "
+fi

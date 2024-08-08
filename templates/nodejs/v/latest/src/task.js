@@ -1,7 +1,11 @@
-// src/task.js
-export const handler = async () => {
-  const msg = `Hello from ${process.env.RUNTIME_ENV}!`;
+export const handler = async (event, context) => {
+  const runtimeEnv = process.env.RUNTIME_ENV || 'unknown';
+  const msg = `Hello from ${runtimeEnv}!`;
   console.log(msg);
+
+  // Print the received event and context
+  console.log('Received event:', event);
+  console.log('Received context:', context);
 
   const response = {
     statusCode: 200,

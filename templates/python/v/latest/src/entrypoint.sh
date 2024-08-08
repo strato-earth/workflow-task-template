@@ -3,16 +3,8 @@ set -eo pipefail
 
 # Check the runtime environment
 if [ "$RUNTIME_ENV" = "lambda" ]; then
-  export _HANDLER="strato_task.handler"
-
-  RUNTIME_ENTRYPOINT=/var/runtime/bootstrap
-  if [ -z "${AWS_LAMBDA_RUNTIME_API}" ]; then
-    echo "Starting Lambda RIE..."
-    exec /usr/local/bin/aws-lambda-rie $RUNTIME_ENTRYPOINT
-  else
-    echo "Running in AWS Lambda environment..."
-    exec $RUNTIME_ENTRYPOINT
-  fi
+  echo "Running in AWS Lambda environment..."
+  /lambda-entrypoint.sh "strato_task.handler"
 else
   echo "Running in ECS environment..."
   python "./strato_task.py" "$@"

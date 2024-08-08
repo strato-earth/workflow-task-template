@@ -1,1 +1,1 @@
-# Strato Worflow Container Task written in Bash
+# Strato Worflow Task written in NodeJS

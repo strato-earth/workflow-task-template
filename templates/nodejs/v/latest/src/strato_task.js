@@ -1,11 +1,33 @@
-// eslint-disable-next-line require-await
-export const handler = async () => {
-  const msg = `Hello from ${process.env.RUNTIME_ENV}!`;
+// src/strato_task.js
+import { execSync } from 'child_process';
+import fs from 'fs';
+import { handler as taskHandler } from './task.js'; // Ensure correct path and export
 
-  console.log(msg);
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify(msg)
-  };
-  return response;
+// Export handler as an ES module export
+export const handler = async () => {
+  try {
+    const preScriptPath = '/var/task/pre.sh';
+    const postScriptPath = '/var/task/post.sh';
+
+    if (fs.existsSync(preScriptPath)) {
+      console.log('Running pre.sh...');
+      execSync(preScriptPath, { stdio: 'inherit' });
+    } else {
+      console.log('pre.sh not found, skipping.');
+    }
+
+    const response = await taskHandler(); // Call the imported function
+
+    if (fs.existsSync(postScriptPath)) {
+      console.log('Running post.sh...');
+      execSync(postScriptPath, { stdio: 'inherit' });
+    } else {
+      console.log('post.sh not found, skipping.');
+    }
+
+    return response;
+  } catch (error) {
+    console.error('Error occurred:', error);
+    throw error;
+  }
 };

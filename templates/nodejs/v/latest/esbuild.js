@@ -6,6 +6,7 @@ build({
   bundle: true,
   outfile: './dist/strato_task.mjs',
   platform: 'node',
+  format: 'esm',
   minify: false,
   external: ['@aws-sdk/*'],
   define: {

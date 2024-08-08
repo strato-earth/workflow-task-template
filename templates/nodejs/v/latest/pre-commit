@@ -2,6 +2,7 @@
 set -eo pipefail
 
 pushd "$(dirname "$0")/.." > /dev/null
+npm install
 npm run lint
 npm run format
 npm run build

@@ -1,11 +1,12 @@
-// eslint-disable-next-line require-await
+// src/task.js
 export const handler = async () => {
-  const msg = 'Hello World!';
-
+  const msg = `Hello from ${process.env.RUNTIME_ENV}!`;
   console.log(msg);
+
   const response = {
     statusCode: 200,
-    body: JSON.stringify(msg)
+    body: JSON.stringify(msg),
   };
+
   return response;
 };

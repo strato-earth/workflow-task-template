@@ -163,7 +163,9 @@ if [[ "${GH_TOKEN}" != "" ]]; then
   gh secret set -a actions GH_TOKEN --body $GH_TOKEN
 fi
 
-mv scripts/strato/pre-commit .git/hooks/
+if [ -f pre-commit ]; then
+  mv pre-commit .git/hooks/
+fi
 mkdir -p .github/workflows
 mv github/build.yml .github/workflows/build.yml
 rm -rf templates infrastructure github scripts docker

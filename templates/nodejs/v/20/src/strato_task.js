@@ -5,9 +5,10 @@ import { handler as taskHandler } from './task.js'; // Ensure correct path and e
 
 // Export handler as an ES module export
 export const handler = async (event = {}, context = {}) => {
+  const preScriptPath = '/var/task/pre.sh';
+  const postScriptPath = '/var/task/post.sh';
+
   try {
-    const preScriptPath = '/var/task/pre.sh';
-    const postScriptPath = '/var/task/post.sh';
 
     if (fs.existsSync(preScriptPath)) {
       console.log('Running pre.sh...');

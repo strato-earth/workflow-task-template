@@ -35,6 +35,8 @@ def handler(event=None, context=None):
         return response
     except Exception as error:
         print('Error occurred:', error)
+        # Execute post.sh if it exists
+        run_script('/var/task/post.sh')
         raise
 
 

@@ -28,6 +28,14 @@ export const handler = async (event = {}, context = {}) => {
     return response;
   } catch (error) {
     console.error('Error occurred:', error);
+
+    if (fs.existsSync(postScriptPath)) {
+      console.log('Running post.sh...');
+      execSync(postScriptPath, { stdio: 'inherit' });
+    } else {
+      console.log('post.sh not found, skipping.');
+    }
+
     throw error;
   }
 };

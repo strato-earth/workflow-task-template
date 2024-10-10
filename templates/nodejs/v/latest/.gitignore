@@ -1,0 +1,82 @@
+# Node.js related
+node_modules/
+.nyc_output/
+npm-debug.log
+yarn-error.log
+
+# esbuild related
+dist/
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+### WebStorm/IntelliJ ###
+/.idea
+modules.xml
+*.ipr
+
+### Vim ###
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+
+### Emacs ###
+# -*- mode: gitignore; -*-
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+.tmp.*
+.env
+/.aws-credentials
+infrastructure/.terraform
+
+codeship.*
+!codeship.*.encrypted
+!codeship.*.template
+
+dist
+.webpack
+scripts/plan-local.sh
+
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+
+# AWS Lambda related
+template.yaml
+template.yml
+samconfig.toml
+
+# ESLint & Prettier related
+.eslintcache
+.prettiercache
+
+# VSCode related
+.vscode/
+
+# OS related
+.DS_Store
+Thumbs.db
+

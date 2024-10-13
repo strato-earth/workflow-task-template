@@ -10,7 +10,7 @@ RUN npm run test
 FROM public.ecr.aws/lambda/nodejs:20
 
 # Install necessary utilities
-RUN dnf install -y unzip && \
+RUN dnf install -y unzip jq && \
     dnf clean all
 
 # Install AWS CLI v2

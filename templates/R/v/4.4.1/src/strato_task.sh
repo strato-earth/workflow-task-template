@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "/var/task/task.sh"
-
 strato_pre_wrapper() { 
     if [ -f "/var/task/pre.sh" ]; then
         source /var/task/pre.sh "$@"
@@ -21,12 +19,8 @@ strato_post_wrapper() {
 strato_handler() {
   trap 'strato_post_wrapper' ERR
   strato_pre_wrapper "${1}"
-
-  HANDLER_EXIT_CODE=0
-  # Run handler in a subshell to prevent 'exit' from terminating the main script
-  (
-      handler
-  )
+  
+  Rscript /var/task/task.R
   HANDLER_EXIT_CODE=$?
 
   strato_post_wrapper

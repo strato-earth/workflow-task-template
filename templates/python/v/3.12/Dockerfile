@@ -41,7 +41,7 @@ FROM public.ecr.aws/lambda/python:3.12
 WORKDIR /var/task
 
 # Install necessary utilities
-RUN dnf install -y unzip && \
+RUN dnf install -y unzip jq && \
     dnf clean all
 
 # Install pipenv

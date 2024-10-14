@@ -1,4 +1,3 @@
-// src/strato_task.js
 import { execSync } from 'child_process';
 import fs from 'fs';
 import { handler as taskHandler } from './task.js'; // Ensure correct path and export
@@ -9,10 +8,10 @@ export const handler = async (event = {}, context = {}) => {
   const postScriptPath = '/var/task/post.sh';
 
   try {
-
     if (fs.existsSync(preScriptPath)) {
       console.log('Running pre.sh...');
-      execSync(preScriptPath, { stdio: 'inherit' });
+      // Pass the event as the first argument to pre.sh
+      execSync(`${preScriptPath} '${JSON.stringify(event)}'`, { stdio: 'inherit' });
     } else {
       console.log('pre.sh not found, skipping.');
     }

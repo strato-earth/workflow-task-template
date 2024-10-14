@@ -22,11 +22,18 @@ def handler(event=None, context=None):
         event = {}
 
     try:
-        # Execute pre.sh if it exists
+        env_file = '/tmp/strato_env.json'
+        with open(env_file, 'w') as f: json.dump(event, f)
+
         run_script('/var/task/pre.sh')
 
+        with open(env_file, 'r') as f:
+            env_vars = json.load(f)
+            for key, value in env_vars.items():
+                os.environ[key] = str(value)
+
         # Execute main task logic
-        response = task_handler(event)
+        response = task_handler()
         print("Task Response:", response)
 
         # Execute post.sh if it exists

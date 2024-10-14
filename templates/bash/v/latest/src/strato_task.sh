@@ -4,7 +4,7 @@ source "/var/task/task.sh"
 
 strato_pre_wrapper() { 
     if [ -f "/var/task/pre.sh" ]; then
-        source /var/task/pre.sh "$@"
+        source /var/task/pre.sh
     else
         echo "pre.sh does not exist, skipping..."
     fi
@@ -20,7 +20,9 @@ strato_post_wrapper() {
 
 strato_handler() {
   trap 'strato_post_wrapper' ERR
-  strato_pre_wrapper "${1}"
+
+  echo "$1" > /tmp/strato_env.json
+  strato_pre_wrapper
 
   HANDLER_EXIT_CODE=0
   # Run handler in a subshell to prevent 'exit' from terminating the main script

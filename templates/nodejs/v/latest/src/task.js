@@ -1,16 +1,25 @@
-export const handler = async (event, context) => {
-  const runtimeEnv = process.env.RUNTIME_ENV || 'unknown';
-  const msg = `Hello from ${runtimeEnv}!`;
-  console.log(msg);
+async function main() {
+  try {
+    const runtimeEnv = process.env.RUNTIME_ENV || 'unknown';
+    const msg = `Hello from ${runtimeEnv}!`;
+    console.log(msg);
 
-  // Print the received event and context
-  console.log('Received event:', event);
-  console.log('Received context:', context);
+    // Print all command-line arguments
+    if (process.argv.length > 2) {
+      console.log('Received the following arguments:');
+      process.argv.slice(2).forEach((arg, index) => {
+        console.log(`Argument ${index + 1}: ${arg}`);
+      });
+    } else {
+      console.log('No arguments were passed.');
+    }
+    
+    return 0;
 
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify(msg),
-  };
+  } catch (error) {
+    console.error("Error processing environment variables:", error);
+    return 1;
+  }
+}
 
-  return response;
-};
+await main();

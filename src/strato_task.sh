@@ -2,7 +2,7 @@
 
 strato_pre_wrapper() { 
     if [ -f "/var/task/pre.sh" ]; then
-        source /var/task/pre.sh
+        source /var/task/pre.sh "$@"
     else
         echo "pre.sh does not exist, skipping..."
     fi
@@ -18,10 +18,10 @@ strato_post_wrapper() {
 
 strato_handler() {
   trap 'strato_post_wrapper' ERR
-  echo "$1" > /tmp/strato_env.json
-  strato_pre_wrapper
 
-  Rscript /var/task/task.R
+  strato_pre_wrapper "$@"
+
+  source /var/task/task.sh "$@"
   HANDLER_EXIT_CODE=$?
 
   strato_post_wrapper

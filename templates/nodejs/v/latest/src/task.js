@@ -22,4 +22,4 @@ async function main() {
   }
 }
 
-await main();
+process.exit(await main());

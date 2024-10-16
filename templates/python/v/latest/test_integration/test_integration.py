@@ -1,15 +1,20 @@
-# test_integration.py
-
 import unittest
-from strato_task import handler
+import subprocess
 
 
 class TestIntegration(unittest.TestCase):
+
     def test_integration(self):
-        event = {"integration": "test"}
-        response = handler(event)
-        self.assertEqual(response["statusCode"], 200)
-        self.assertIn("Hello from", response["body"])
+        # Simulate running the task.py script as part of the integration test
+        result = subprocess.run(
+            ['python', 'src/task.py'], capture_output=True, text=True
+        )
+        output = result.stdout
+
+        self.assertEqual(result.returncode, 0)
+        self.assertIn(
+            "Hello from", output
+        )
 
 
 if __name__ == '__main__':

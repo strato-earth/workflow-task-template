@@ -1,7 +1,36 @@
-# First stage: build, test, and lint
-FROM public.ecr.aws/lambda/python:3.12 AS builder
+# First stage: build Python and install dependencies
+FROM public.ecr.aws/lambda/provided:al2023 AS builder
 
 WORKDIR /app
+
+# Install necessary build tools and dependencies
+RUN dnf install -y \
+    gcc \
+    openssl-devel \
+    bzip2-devel \
+    libffi-devel \
+    zlib-devel \
+    make \
+    wget \
+    tar \
+    unzip jq && \
+    dnf clean all
+
+# Build Python 3.12 from source with --prefix to install in /opt/python
+RUN LATEST_PYTHON_3_12=$(curl -s https://www.python.org/ftp/python/ | grep -oP '3\.12\.\d+' | sort -V | tail -1) && \
+    wget https://www.python.org/ftp/python/$LATEST_PYTHON_3_12/Python-$LATEST_PYTHON_3_12.tgz && \
+    tar xzf Python-$LATEST_PYTHON_3_12.tgz && \
+    cd Python-$LATEST_PYTHON_3_12 && \
+    ./configure --enable-optimizations --prefix=/opt/python && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf Python-$LATEST_PYTHON_3_12.tgz Python-$LATEST_PYTHON_3_12
+
+RUN ln -s /opt/python/bin/python3.12 /usr/bin/python && \
+    ln -s /opt/python/bin/pip3.12 /usr/bin/pip
+
+ENV PATH="/opt/python/bin:$PATH"
 
 # Install pipenv
 RUN pip install --upgrade pip && pip install pipenv
@@ -36,38 +65,41 @@ RUN python -m unittest discover -s test
 RUN python -m unittest discover -s test_integration
 
 # Second stage: create the final container
-FROM public.ecr.aws/lambda/python:3.12
+FROM public.ecr.aws/lambda/provided:al2023
 
 WORKDIR /var/task
 
-# Install necessary utilities
-RUN dnf install -y unzip jq && \
+# Install only the necessary runtime dependencies
+RUN dnf install -y \
+    openssl \
+    bzip2-libs \
+    libffi \
+    zlib \
+    wget \
+    unzip jq && \
     dnf clean all
 
-# Install pipenv
-RUN pip install --upgrade pip && pip install pipenv
+# Copy Python installation from /opt/python in the builder stage to the default system locations
+COPY --from=builder /opt/python/bin/python3.12 /usr/local/bin/python3.12
+COPY --from=builder /opt/python/bin/pip3.12 /usr/local/bin/pip3.12
+COPY --from=builder /opt/python/lib /usr/local/lib
+COPY --from=builder /opt/python/include /usr/local/include
+COPY --from=builder /opt/python/share /usr/local/share
 
-# Copy the Pipfile and Pipfile.lock into the container
-COPY Pipfile Pipfile.lock ./
-
-# Install dependencies using pipenv
-# Use --deploy to install exact versions specified in Pipfile.lock
-# Use --system to install them into the global Python environment
-RUN pipenv install --deploy --ignore-pipfile --system && \
-    # Clean up pip cache to reduce image size
-    rm -rf /root/.cache/pip
+# Create symlinks for python and pip
+RUN ln -s /usr/local/bin/python3.12 /usr/bin/python && \
+    ln -s /usr/local/bin/pip3.12 /usr/bin/pip
 
 # Install AWS CLI v2
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
     rm -rf awscliv2.zip aws/ && \
-    # Remove temporary files to reduce image size
     rm -rf /var/cache/dnf/* /tmp/*
 
 # Copy application code
 COPY src/ /var/task/
-RUN chmod +x /var/task/*.sh
+RUN chmod +x /var/task/*.sh && mv /var/task/bootstrap.sh /var/runtime/bootstrap
 
 # Set the entrypoint to your custom script
 ENTRYPOINT ["/var/task/entrypoint.sh"]

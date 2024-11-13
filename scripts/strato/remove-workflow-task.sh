@@ -37,39 +37,40 @@ if [[ "${ENVIRONMENT}" = "" || "${PROFILE}" = "" ]]; then
 fi
 
 
-# Get the repository and organization name using GitHub CLI
 REPO_INFO=$(gh repo view --json owner,name)
-# Extract the repository name and organization name using jq
 REPO_NAME=$(echo "$REPO_INFO" | jq -r '.name')
 GITHUB_ORGANIZATION=$(echo "$REPO_INFO" | jq -r '.owner.login')
 
 rm -rf workflow-task-template
 git clone git@github.com:strato-earth/workflow-task-template.git
 
-if [[ "${WORKFLOW_TASK_TYPE}" = "container" ]]; then
-  # Check if the ECR repository exists
-  if aws --profile "${PROFILE}" --region "$REGION" ecr describe-repositories --repository-names "$REPO_NAME" 2>/dev/null; then
-    # List images and extract imageDigests
-    image_digests=$(aws --profile "${PROFILE}" --region "$REGION" ecr describe-images --repository-name ${REPO_NAME} --query 'imageDetails[*].imageDigest' --output json | jq -r '.[]')
+if aws --profile "${PROFILE}" --region "$REGION" ecr describe-repositories --repository-names "$REPO_NAME" 2>/dev/null; then
+  image_digests=$(aws --profile "${PROFILE}" --region "$REGION" ecr describe-images --repository-name ${REPO_NAME} --query 'imageDetails[*].imageDigest' --output json | jq -r '.[]')
+  for digest in $image_digests; do
+    aws --profile "${PROFILE}" --region "$REGION" ecr batch-delete-image --repository-name ${REPO_NAME} --image-ids imageDigest=$digest
+  done
 
-    # Loop over all imageDigests and delete
-    for digest in $image_digests; do
-      aws --profile "${PROFILE}" --region "$REGION" ecr batch-delete-image --repository-name ${REPO_NAME} --image-ids imageDigest=$digest
-    done
-    
-    sleep 3
-        
-    workflow-task-template/scripts/strato/delete-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
-  else
-      echo "ECR Repository '$REPO_NAME' does not exist. Skipping deletion step."
-  fi    
+  sleep 3
+
+  WORKFLOW_TASKS_REPOS_SSM_KEY="/strato/${ENVIRONMENT}/config/workflow_tasks_repos"
+  EXISTING_WORKFLOW_TASKS=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "$WORKFLOW_TASKS_REPOS_SSM_KEY" --query "Parameter.Value" --output text 2>/dev/null || echo "")
+  IFS=',' read -ra TASKS_ARRAY <<< "$EXISTING_WORKFLOW_TASKS"
+  for i in "${!TASKS_ARRAY[@]}"; do
+    if [[ "${TASKS_ARRAY[i]}" == "$GITHUB_ORGANIZATION/$REPO_NAME" ]]; then
+      unset 'TASKS_ARRAY[i]'
+    fi
+  done
+  NEW_WORKFLOW_TASKS=$(IFS=','; echo "${TASKS_ARRAY[*]}")
+  aws --profile "${PROFILE}" --region "$REGION" ssm put-parameter --name "$WORKFLOW_TASKS_REPOS_SSM_KEY" --value "$NEW_WORKFLOW_TASKS" --type "String" --overwrite
+
+  workflow-task-template/scripts/strato/update-workflow-tasks.sh -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
+else
+  echo "ECR Repository '$REPO_NAME' does not exist. Skipping deletion step."
 fi
 
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile ${PROFILE} | jq -r '.Account')
-ARTIFACTS_BUCKET=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/workflow_task_artifacts_bucket" --query "Parameter.Value" --output text)
+ARTIFACTS_BUCKET=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/workflow-master/workflow_task_artifacts_bucket" --query "Parameter.Value" --output text)
 aws s3 --profile "${PROFILE}" --region "$REGION" rm --recursive s3://${ARTIFACTS_BUCKET}/container/${REPO_NAME}
-
-workflow-task-template/scripts/strato/delete-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b "$ARTIFACTS_BUCKET"
 
 rm -rf infrastructure scripts/strato .github/workflows/build.yml workflow-task-template remove-workflow-task.sh
 

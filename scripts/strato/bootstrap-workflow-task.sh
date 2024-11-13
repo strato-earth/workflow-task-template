@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -exo pipefail
 
 usage() {
   echo ''
@@ -150,12 +150,19 @@ pwd
 
 cp -a templates/$TEMPLATE_FOLDER/v/$RUNTIME_VERSION/. .
 
-scripts/strato/create-ecr-repo.sh -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
+WORKFLOW_TASKS_REPOS_SSM_KEY="/strato/${ENVIRONMENT}/config/workflow_tasks_repos"
+EXISTING_WORKFLOW_TASKS=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "$WORKFLOW_TASKS_REPOS_SSM_KEY" --query "Parameter.Value" --output text 2>/dev/null || echo "")
+IFS=',' read -ra TASKS_ARRAY <<< "$EXISTING_WORKFLOW_TASKS"
+TASKS_ARRAY+=("$GITHUB_ORGANIZATION/$REPO_NAME")
+UNIQUE_TASKS=($(echo "${TASKS_ARRAY[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+NEW_WORKFLOW_TASKS=$(IFS=','; echo "${UNIQUE_TASKS[*]}")
+
+aws --profile "${PROFILE}" --region "$REGION" ssm put-parameter --name "$WORKFLOW_TASKS_REPOS_SSM_KEY" --value "$NEW_WORKFLOW_TASKS" --type "String" --overwrite
+
+scripts/strato/update-workflow-tasks.sh -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE}
 
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile ${PROFILE} | jq -r '.Account')
-ARTIFACTS_BUCKET=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/workflow_task_artifacts_bucket" --query "Parameter.Value" --output text)
-
-scripts/strato/create-github-oidc.sh -o "${GITHUB_ORGANIZATION}" -n "${REPO_NAME}" -e "${ENVIRONMENT}" -r $REGION -p ${PROFILE} -b "$ARTIFACTS_BUCKET"
+ARTIFACTS_BUCKET=$(aws --profile "${PROFILE}" --region "$REGION" ssm get-parameter --name "/strato/${ENVIRONMENT}/config/workflow-master/workflow_task_artifacts_bucket" --query "Parameter.Value" --output text)
 
 gh secret set -a actions BUILD_ARTIFACTS_AWS_ACCOUNT_ID --body $AWS_ACCOUNT_ID
 gh secret set -a actions BUILD_S3_ARTIFACTS_BUCKET --body $ARTIFACTS_BUCKET

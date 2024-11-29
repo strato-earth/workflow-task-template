@@ -5,6 +5,6 @@
     "region": "config/region",
     "workflow_tasks_repos": "config/workflow_tasks_repos",
     "workflow_accounts": "config/workflow_accounts",
-    "oidc_provider_arn": "config/github/oidc_provider_arn"
+    "oidc_provider_arn": "config/artifacts/oidc_provider_arn"
   }
 }

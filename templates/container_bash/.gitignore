@@ -1,0 +1,3 @@
+build/
+scripts/post.sh
+scripts/pre.sh
